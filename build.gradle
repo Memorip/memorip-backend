@@ -31,3 +31,10 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+bootJar {
+   destinationDirectory = file("./target")
+   archivesBaseName = 'memorip'   //프로젝트이름
+   archiveFileName = 'memorip.jar' //jar파일명 
+   archiveVersion = "0.0.1"
+}
