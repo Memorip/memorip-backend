@@ -23,7 +23,7 @@ public class Users {
     private String password;
 
     @Column
-    private String nick_name;
+    private String nickname;
 
     @Column
     private String profile;

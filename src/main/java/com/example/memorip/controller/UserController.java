@@ -24,9 +24,6 @@ public class UserController {
         for (Users user:userEntityList){
             log.info(user.toString());
         }
-
-
-
         // 3. 뷰 페이지를 설정
         return "";
     }
