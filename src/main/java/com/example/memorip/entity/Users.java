@@ -15,7 +15,7 @@ import lombok.ToString;
 public class Users {
     @Id // 대표값 지정! like a 주민등록번호
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 1,2,3,... 자동 생성 어노테이션
-    private int user_id;
+    private int id;
 
     @Column
     private String email;
@@ -32,7 +32,7 @@ public class Users {
     @Column
     private int role;
 
-    @Column()
-    private String createdAt;
+    @Column
+    private String created_at;
 
 }
