@@ -1,6 +1,5 @@
 package com.example.memorip.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor // 디폴트 생성자 추가
 @ToString
 @Getter
-public class Users {
+public class User {
     @Id // 대표값 지정! like a 주민등록번호
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 1,2,3,... 자동 생성 어노테이션
     private int id;
