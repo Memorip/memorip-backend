@@ -1,30 +1,32 @@
 package com.example.memorip.controller;
 
+import com.example.memorip.dto.UserDTO;
 import com.example.memorip.entity.Users;
-import com.example.memorip.repository.UserRepository;
+import com.example.memorip.repository.UserMapper;
+import com.example.memorip.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
-@Slf4j // 로깅 어노테이션
+@Slf4j
+@RestController
+@RequestMapping("/api")
 public class UserController {
-    @Autowired // 스프링부트가 미리 생성해놓은 객체를 가져다 자동 연결!
-    private UserRepository userRepository;
 
-    @GetMapping("/users")
-    public String getUsers(){
-        // 1. 모든 User를 가져온다.
-        List<Users> userEntityList = userRepository.findAll();
+//    private final UserService userService;
+    private final UserMapper userMapper;
+    public UserController(UserService userService, UserMapper userMapper){
+//        this.userService = userService;
+        this.userMapper=userMapper;
+    }
 
-        //
-        for (Users user:userEntityList){
-            log.info(user.toString());
-        }
-        // 3. 뷰 페이지를 설정
-        return "";
+    @GetMapping("/userlist")
+    public List<UserDTO> getusers(){
+//        List<UserDTO> lists = userMapper.getUsers();
+        return userMapper.getUsers();
     }
 }
+

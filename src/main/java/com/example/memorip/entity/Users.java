@@ -1,5 +1,6 @@
 package com.example.memorip.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class Users {
     @Column
     private int role;
 
-    @Column
-    private String created_at;
+    @Column()
+    private String createdAt;
 
 }
