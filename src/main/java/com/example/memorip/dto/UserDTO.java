@@ -15,5 +15,5 @@ public class UserDTO {
     private String nickname;
     private String profile;
     private int role;
-    private Date created_at;
+    private Date createdAt;
 }
