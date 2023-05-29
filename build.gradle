@@ -23,11 +23,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-//	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+	implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.0")
+	implementation("com.oracle.ojdbc:orai18n:19.3.0.0")
+	runtimeOnly("com.oracle.database.jdbc:ojdbc8")
 }
 
 tasks.named('test') {
@@ -35,9 +38,8 @@ tasks.named('test') {
 }
 
 bootJar {
-   destinationDirectory = file("./target")
-   archivesBaseName = 'memorip'   //프로젝트이름
-   archiveFileName = 'memorip.jar' //jar파일명 
-   archiveVersion = "0.0.1"
+	destinationDirectory = file("./target")
+	archivesBaseName = 'memorip'   //프로젝트이름
+	archiveFileName = 'memorip.jar' //jar파일명
+	archiveVersion = "0.0.1"
 }
-
