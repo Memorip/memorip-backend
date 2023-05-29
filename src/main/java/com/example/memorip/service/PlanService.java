@@ -18,4 +18,8 @@ public class PlanService {
     public ArrayList<Plan> selectAll(){
         return planRepository.findAll();
     }
+
+    public Plan save(Plan entity){
+        return planRepository.save(entity);
+    }
 }

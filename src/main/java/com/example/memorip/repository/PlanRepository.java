@@ -8,4 +8,7 @@ import java.util.ArrayList;
 public interface PlanRepository extends CrudRepository<Plan,Long> {
     @Override
     ArrayList<Plan> findAll();
+
+    @Override
+    Plan save(Plan entity);
 }

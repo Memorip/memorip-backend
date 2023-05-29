@@ -5,9 +5,8 @@ import com.example.memorip.entity.Plan;
 import com.example.memorip.repository.PlanMapper;
 import com.example.memorip.service.PlanService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class PlanController {
     }
 
     @GetMapping("/plans")
-        public List<PlanDTO> slectAll(){
+    public List<PlanDTO> slectAll(){
         List<Plan> lists = planService.selectAll();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
 
@@ -36,4 +35,16 @@ public class PlanController {
         return dtoList;
     }
 
+    @PostMapping("/plan/add")
+    public ResponseEntity<?> savePlan(@RequestBody PlanDTO dto){
+
+        //1. DTO -> 엔티티 변환
+        Plan entity = planMapper.planDTOtoPlan(dto);
+        log.info(entity.toString());
+
+        //2. 엔티티 -> DB 저장
+        Plan savedPlan = planService.save(entity);
+
+        return ResponseEntity.ok(savedPlan);
+    }
 }

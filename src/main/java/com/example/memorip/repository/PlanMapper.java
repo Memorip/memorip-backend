@@ -26,6 +26,22 @@ public interface PlanMapper {
     @Mapping(source = "created_at", target = "createdAt")
     PlanDTO planToPlanDTO(Plan plan);
 
+    @Mapping(source = "userId", target = "user_id")
+    @Mapping(source = "city", target = "city",qualifiedByName = "cityListToString")
+    @Mapping(source = "startDate", target = "start_date")
+    @Mapping(source = "endDate", target = "end_date")
+    @Mapping(source = "tripType", target = "trip_type")
+    @Mapping(source = "participants", target = "participants",qualifiedByName = "participantsIntegerToString")
+    @Mapping(source = "createdAt", target = "created_at")
+    Plan planDTOtoPlan(PlanDTO dto);
+
+    @Named("cityToList")
+    default List<String> citiesToLists(String city) {
+        List<String> cities = new ArrayList<>();
+        cities.add(city);
+        return cities;
+    }
+
     @Named("participantsToIntegers")
     default List<Integer> participantsToIntegers(String participants) {
         List<Integer> participantIds = new ArrayList<>();
@@ -34,10 +50,29 @@ public interface PlanMapper {
         return participantIds;
     }
 
-    @Named("cityToList")
-    default List<String> citiesToLists(String city) {
-        List<String> cities = new ArrayList<>();
-        cities.add(city);
-        return cities;
+    @Named("cityListToString")
+    default String cityListToString(List<String> city) {
+        String answer= "";
+        for (int i=0;i<city.size();i++) {
+            if(i!=city.size()-1){
+                answer += city.get(i) +",";
+            }else{
+                answer += city.get(i);
+            }
+        }
+        return answer;
+    }
+
+    @Named("participantsIntegerToString")
+    default String participantsIntegerToString(List<Integer> participants) {
+        String answer = "";
+        for (int i = 0; i < participants.size(); i++) {
+            if (i != participants.size() - 1) {
+                answer += participants.get(i) + ",";
+            }else {
+                answer += participants.get(i);
+            }
+        }
+        return answer;
     }
 }
