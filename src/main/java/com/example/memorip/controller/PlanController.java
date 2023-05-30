@@ -65,14 +65,11 @@ public class PlanController {
 
     @DeleteMapping("/plans/delete/{id}")
     public ResponseEntity<?> removeById(@PathVariable int id) {
-        Plan plan = planService.findById(id);
-
-        if (plan == null) {
+        Plan removedPlan = planService.deleteById(id);
+        if(removedPlan == null) {
             String errorMessage = "삭제할 여행 계획이 없어요.";
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
         }
-
-        Plan removedPlan = planService.deleteById(id);
         return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
     }
 }

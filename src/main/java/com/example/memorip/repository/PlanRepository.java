@@ -14,5 +14,4 @@ public interface PlanRepository extends JpaRepository<Plan,Long> {
     @Override
     Plan save(Plan entity);
 
-    Plan deleteById(int id);
 }

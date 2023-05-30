@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,6 +23,8 @@ public class PlanService {
     }
 
     public Plan findById(int id){
+        Plan plan = planRepository.findById(id);
+        if(plan==null) return null;
         return planRepository.findById(id);
     }
 
@@ -29,13 +32,13 @@ public class PlanService {
         return planRepository.save(entity);
     }
 
-    public Plan deleteById(int id){
-        Plan target = planRepository.findById(id);
-
-        if(target == null){
+    public Plan deleteById(int id) {
+        Optional<Plan> optionalPlan = Optional.ofNullable(planRepository.findById(id));
+        if (optionalPlan.isEmpty()) {
             return null;
         }
-        planRepository.deleteById(id);
+        Plan target = optionalPlan.get();
+        planRepository.delete(target);
         return target;
     }
 }
