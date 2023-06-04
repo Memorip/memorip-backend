@@ -1,6 +1,7 @@
 package com.example.memorip.service;
 
 import com.example.memorip.controller.PlanController;
+import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.repository.PlanRepository;
 import jakarta.transaction.Transactional;
@@ -28,9 +29,18 @@ public class PlanService {
         return planRepository.findById(id);
     }
 
-    public Plan save(Plan entity){
+
+     public Plan save(Plan entity){
         return planRepository.save(entity);
     }
+
+
+    /*
+    public Plan save(PlanDTO dto){
+        return planRepository.save(dto);
+    }
+     */
+
 
     public Plan deleteById(int id) {
         Optional<Plan> optionalPlan = Optional.ofNullable(planRepository.findById(id));

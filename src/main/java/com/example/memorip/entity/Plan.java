@@ -38,5 +38,5 @@ public final class Plan {
     private Date created_at;
 
     @Column
-    private boolean isPublic;
+    private Boolean isPublic;
 }

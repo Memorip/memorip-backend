@@ -5,17 +5,19 @@ import com.example.memorip.entity.Plan;
 import com.example.memorip.exception.DefaultRes;
 import com.example.memorip.repository.PlanMapper;
 import com.example.memorip.service.PlanService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@Validated
 public class PlanController {
     private final PlanService planService;
     private final PlanMapper planMapper;
@@ -52,7 +54,8 @@ public class PlanController {
     }
 
     @PostMapping("/plans/add")
-    public ResponseEntity<?> savePlan(@RequestBody PlanDTO dto){
+    public ResponseEntity<?> savePlan(@Valid @RequestBody PlanDTO dto) {
+
 
         //1. DTO -> 엔티티 변환
         Plan entity = planMapper.planDTOtoPlan(dto);
@@ -61,7 +64,42 @@ public class PlanController {
         Plan savedPlan = planService.save(entity);
 
         return new ResponseEntity<>(DefaultRes.res(200, "success", savedPlan), HttpStatus.OK);
+
+
+//        Plan savedPlan = planService.save(dto);
+//        return new ResponseEntity<>(DefaultRes.res(200, "success", dto), HttpStatus.OK);
+
     }
+
+    @PatchMapping("/plans/add/{id}")
+    public ResponseEntity<?> updatePlan(@Valid @PathVariable int id, @RequestBody PlanDTO dto){
+        Plan plan = planService.findById(id);
+
+        if(plan==null){
+            String errorMessage = "수정할 여행 계획이 없어요.";
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+        }
+
+        if(dto.getCity()!=null) {
+            String cities = planMapper.cityListToString(dto.getCity());
+            plan.setCity(cities);
+        }
+        if(dto.getStartDate()!=null) plan.setStart_date(dto.getStartDate());
+        if(dto.getEndDate()!=null) plan.setEnd_date(dto.getEndDate());
+        if(dto.getTripType()!=null) plan.setTrip_type(dto.getTripType());
+        if(dto.getParticipants()!=null) {
+            String participants = planMapper.participantsIntegerToString(dto.getParticipants());
+            plan.setParticipants(participants);
+        }
+        if(dto.getCreatedAt()!=null) plan.setCreated_at(dto.getCreatedAt());
+        if(dto.getIsPublic()!=null) plan.setIsPublic(true);
+
+
+        Plan savedPlan = planService.save(plan);
+
+        return new ResponseEntity<>(DefaultRes.res(200, "success",savedPlan), HttpStatus.OK);
+
+   }
 
     @DeleteMapping("/plans/delete/{id}")
     public ResponseEntity<?> removeById(@PathVariable int id) {
