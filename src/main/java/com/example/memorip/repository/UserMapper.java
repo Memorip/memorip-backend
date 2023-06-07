@@ -1,17 +1,21 @@
 package com.example.memorip.repository;
 
+import com.example.memorip.dto.SignUpDTO;
 import com.example.memorip.dto.UserDTO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
+import com.example.memorip.entity.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserMapper {
-//    @Select("SELECT * FROM users")
-    @Results({
-            @Result(property = "createdAt", column = "created_at")
-    })
-    List<UserDTO> getUsers();
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+
+    List<UserDTO> usersToUserDTOs(List<User> users);
+
+    UserDTO userToUserDTO(User user);
+
+    User userDTOToUser(UserDTO userDTO);
+
 }
