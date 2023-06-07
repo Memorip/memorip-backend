@@ -2,10 +2,7 @@ package com.example.memorip.controller;
 
 import com.example.memorip.dto.SignUpDTO;
 import com.example.memorip.dto.UserDTO;
-import com.example.memorip.entity.User;
-import com.example.memorip.repository.UserMapper;
 import com.example.memorip.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +14,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api")
-@Tag(name = "user", description = "유저 API")
 public class UserController {
 
     private final UserService userService;
@@ -27,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/checkEmail")
-    public ResponseEntity checkEmail(@RequestParam("email") String email) {
+    public ResponseEntity<Boolean> checkEmail(@RequestParam("email") String email) {
         return ResponseEntity.ok(userService.isEmailTaken(email));
     }
 
@@ -41,7 +37,7 @@ public class UserController {
     // 현재 SecurityContext에 저장된 username 유저 정보를 가져옴
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<UserDTO> getMyUserInfo(HttpServletRequest request) {
+    public ResponseEntity<UserDTO> getMyUserInfo() {
         return ResponseEntity.ok(userService.getMyUserWithAuthorities());
     }
 
