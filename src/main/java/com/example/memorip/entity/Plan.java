@@ -39,4 +39,10 @@ public final class Plan {
 
     @Column
     private Boolean isPublic;
+
+    @Column
+    private int likes;
+
+    @Column
+    private int views;
 }

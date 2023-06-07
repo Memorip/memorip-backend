@@ -14,18 +14,15 @@ import java.util.*;
 public class PlanDTO {
     private int id;
     private int userId;
-
-    // @NotEmpty(message = "not empty")
     private List<String> city;
     private Date startDate;
     private Date endDate;
-    // @NotBlank(message = "어이없네 진짜 자바")
     private String tripType;
     private List<Integer> participants;
     private Date createdAt;
     private Boolean isPublic;
-
-
+    private int likes;
+    private int views;
 }
 
 
