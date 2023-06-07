@@ -17,6 +17,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@Tag(name = "user", description = "유저 API")
 public class UserController {
 
     private final UserService userService;
@@ -50,7 +51,7 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserInfo(@PathVariable String email) {
         return ResponseEntity.ok(userService.getUserWithAuthorities(email));
     }
-
+  
     @GetMapping("/users")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> getUsers() {
