@@ -1,6 +1,5 @@
 package com.example.memorip.repository;
 
-import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.entity.Plan;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,14 +15,5 @@ public interface PlanRepository extends JpaRepository<Plan,Long> {
 
     @Override
     Plan save(Plan entity);
-
-
-    /*
-    default Plan save(PlanDTO dto){
-        Plan entity = PlanMapper.INSTANCE.planDTOtoPlan(dto);
-        return saveAndFlush(entity);
-    };
-     */
-
 
 }
