@@ -41,8 +41,5 @@ public final class Plan {
     private Boolean is_public;
 
     @Column
-    private int likes;
-
-    @Column
     private int views;
 }

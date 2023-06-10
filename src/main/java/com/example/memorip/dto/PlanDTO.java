@@ -21,7 +21,6 @@ public class PlanDTO {
     private List<Integer> participants;
     private Date createdAt;
     private Boolean isPublic;
-    private int likes;
     private int views;
 }
 

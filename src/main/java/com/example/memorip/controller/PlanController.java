@@ -62,7 +62,6 @@ public class PlanController {
     public ResponseEntity<?> savePlan(@Valid @RequestBody PlanDTO dto) {
 
 
-        dto.setLikes(0);
         dto.setViews(0);
         //1. DTO -> 엔티티 변환
         Plan entity = planMapper.planDTOtoPlan(dto);
