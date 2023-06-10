@@ -22,6 +22,7 @@ public interface PlanMapper {
     @Mapping(source = "trip_type", target = "tripType")
     @Mapping(source = "participants", target = "participants",qualifiedByName = "participantsToIntegers")
     @Mapping(source = "created_at", target = "createdAt")
+    @Mapping(source = "is_public", target = "isPublic")
     PlanDTO planToPlanDTO(Plan plan);
 
     @Mapping(source = "userId", target = "user_id")
@@ -31,6 +32,7 @@ public interface PlanMapper {
     @Mapping(source = "tripType", target = "trip_type")
     @Mapping(source = "participants", target = "participants",qualifiedByName = "participantsIntegerToString")
     @Mapping(source = "createdAt", target = "created_at")
+    @Mapping(source = "isPublic", target = "is_public")
     Plan planDTOtoPlan(PlanDTO dto);
 
     @Named("cityToList")

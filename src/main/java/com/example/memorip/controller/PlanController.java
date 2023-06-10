@@ -72,10 +72,6 @@ public class PlanController {
 
         return new ResponseEntity<>(DefaultRes.res(200, "success", savedPlan), HttpStatus.OK);
 
-
-//        Plan savedPlan = planService.save(dto);
-//        return new ResponseEntity<>(DefaultRes.res(200, "success", dto), HttpStatus.OK);
-
     }
 
     @PatchMapping("/plans/add/{id}")
@@ -99,7 +95,7 @@ public class PlanController {
             plan.setParticipants(participants);
         }
         if(dto.getCreatedAt()!=null) plan.setCreated_at(dto.getCreatedAt());
-        if(dto.getIsPublic()!=null) plan.setIsPublic(true);
+        if(dto.getIsPublic()!=null) plan.setIs_public(true);
 
 
         Plan savedPlan = planService.save(plan);

@@ -38,7 +38,7 @@ public final class Plan {
     private Date created_at;
 
     @Column
-    private Boolean isPublic;
+    private Boolean is_public;
 
     @Column
     private int likes;
