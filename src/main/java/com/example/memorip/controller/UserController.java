@@ -1,21 +1,19 @@
 package com.example.memorip.controller;
 
+import com.example.memorip.dto.SignUpDTO;
 import com.example.memorip.dto.UserDTO;
 import com.example.memorip.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
-@Tag(name = "user", description = "유저 API")
 public class UserController {
 
     private final UserService userService;
@@ -24,14 +22,42 @@ public class UserController {
         this.userService = userService;
     }
 
-    /**
-     * [API] 모든 유저 조회
-     */
-    @Operation(summary = "모든 유저 조회", description = "모든 유저 정보를 조회합니다.")
+    @GetMapping("/checkEmail")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam("email") String email) {
+        return ResponseEntity.ok(userService.isEmailTaken(email));
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpDTO> signup(
+            @Valid @RequestBody SignUpDTO signUpDTO
+    ) {
+        return ResponseEntity.ok(userService.signup(signUpDTO));
+    }
+
+    // 현재 SecurityContext에 저장된 username 유저 정보를 가져옴
+    @GetMapping("/user")
+    @PreAuthorize("hasAnyRole('USER')")
+    public ResponseEntity<UserDTO> getMyUserInfo() {
+        return ResponseEntity.ok(userService.getMyUserWithAuthorities());
+    }
+
+    // username(email)을 기준으로 유저 정보를 가져옴
+    @GetMapping("/users/{email}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<UserDTO> getUserInfo(@PathVariable String email) {
+        return ResponseEntity.ok(userService.getUserWithAuthorities(email));
+    }
+  
     @GetMapping("/users")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> getUsers() {
-        List<UserDTO> users = userService.getUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(userService.getUsers());
+    }
+
+    @DeleteMapping ("/users/{email}")
+    @PreAuthorize("hasAnyRole('USER')")
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable String email) {
+        return ResponseEntity.ok(userService.deactivateUser(email));
     }
 }
 
