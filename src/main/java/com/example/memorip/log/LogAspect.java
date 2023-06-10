@@ -20,29 +20,31 @@ public class LogAspect {
     public void beforeRequest(JoinPoint joinPoint) {
         // 메서드 정보 받아오기
         Method method = getMethod(joinPoint);
-        log.info("======= method name = {} =======", method.getName());
+        log.info("🟨🟨🟨🟨🟨🟨🟨🟨 Start Request 🟨🟨🟨🟨🟨🟨🟨🟨", method.getName());
+        log.info("메서드 이름: {}", method.getName());
 
         // 파라미터 받아오기
         Object[] args = joinPoint.getArgs();
-        if (args.length <= 0) log.info("no parameter");
+        if (args.length <= 0) log.info("파라미터가 없습니다.");
         for (Object arg : args) {
-            log.info("parameter type = {}", arg.getClass().getSimpleName());
-            log.info("parameter value = {}", arg);
+            log.info("{} 타입의 {} 파라미터가 있습니다.", arg.getClass().getSimpleName(), arg);
         }
     }
 
     @AfterReturning(pointcut = "controller()", returning = "returnValue")
     public void afterReturningLogging(JoinPoint joinPoint, Object returnValue) {
-        log.info("###End request {}", joinPoint.getSignature().toShortString());
+        log.info("🟩🟩🟩🟩🟩🟩🟩🟩 End request 🟩🟩🟩🟩🟩🟩🟩🟩");
+        log.info(joinPoint.getSignature().toShortString());
 
         if (returnValue == null) return;
 
-        log.info("\t{}", returnValue.toString());
+        log.info("{} 컨트롤러에서 {}를 반환했습니다.", joinPoint.getSignature().toShortString(), returnValue.toString());
+
     }
 
     @AfterThrowing(pointcut =  "controller()", throwing = "e")
             public void afterThrowingLogging(JoinPoint joinPoint, Exception e) {
-        log.error("###Occured error in request {}", joinPoint.getSignature().toShortString());
+        log.error("🟥🟥🟥🟥🟥🟥🟥🟥 Occured error in request {} 🟥🟥🟥🟥🟥🟥🟥🟥", joinPoint.getSignature().toShortString());
         log.error("\t{}", e.getMessage());
     }
 
