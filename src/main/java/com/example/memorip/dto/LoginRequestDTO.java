@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class LoginRequestDTO {
 
     @NotNull
