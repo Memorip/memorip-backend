@@ -61,7 +61,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         // 로그인, 회원가입 api는 토큰이 없는 상태에서 요청이 들어오기 때문에 permitAll 설정해줌
-                        .requestMatchers("/hello", "/api/login", "/api/signup", "/api/mail/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/hello", "/api/checkEmail", "/api/login", "/api/signup", "/api/mail/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
