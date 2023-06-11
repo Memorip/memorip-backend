@@ -30,7 +30,21 @@ public class PlanController {
 
     @GetMapping("/plans")
     public ResponseEntity<?> slectAll(){
-        List<Plan> lists = planService.selectAll();
+        List<Plan> lists = planService.getAll();
+        ArrayList<PlanDTO> dtoList = new ArrayList<>();
+        if (lists.size() == 0) {
+            String errorMessage = "조회되는 여행 계획이 없어요.";
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+        }
+        for(Plan plan : lists){
+            dtoList.add(planMapper.planToPlanDTO(plan));
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+    }
+
+    @GetMapping("/plans/sort")
+    public ResponseEntity<?> sortPlan(){
+        List<Plan> lists = planService.sortByViews();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
         if (lists.size() == 0) {
             String errorMessage = "조회되는 여행 계획이 없어요.";

@@ -1,13 +1,9 @@
 package com.example.memorip.service;
 
-import com.example.memorip.controller.PlanController;
-import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.repository.PlanRepository;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -19,8 +15,12 @@ public class PlanService {
         this.planRepository=planRepository;
     }
 
-    public ArrayList<Plan> selectAll(){
+    public ArrayList<Plan> getAll(){
         return planRepository.findAll();
+    }
+
+    public ArrayList<Plan> sortByViews(){
+        return planRepository.sortByViews();
     }
 
     public Plan findById(int id){
@@ -33,13 +33,6 @@ public class PlanService {
      public Plan save(Plan entity){
         return planRepository.save(entity);
     }
-
-
-    /*
-    public Plan save(PlanDTO dto){
-        return planRepository.save(dto);
-    }
-     */
 
 
     public Plan deleteById(int id) {
