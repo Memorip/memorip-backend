@@ -56,10 +56,11 @@ public class AuthController {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-            return new ResponseEntity<>(new JwtResponseDTO(jwt), httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<>(
+                    DefaultRes.res(200, "로그인 성공", new JwtResponseDTO(jwt)), httpHeaders, HttpStatus.OK);
         }catch (Exception e){
-            Error error = new Error(400, "잘못된 이메일 또는 패스워드를 입력했어요");
-            return new ResponseEntity<>(DefaultRes.res(error.getStatus(), error.getMessage(), ""), HttpStatus.BAD_REQUEST);
+            Error error = new Error(401, "잘못된 이메일 또는 패스워드를 입력했습니다.");
+            return new ResponseEntity<>(DefaultRes.res(error.getStatus(), error.getMessage(), ""), HttpStatus.UNAUTHORIZED);
         }
     }
 }
