@@ -30,4 +30,11 @@ public class LikeService {
         return likeRepository.findLikeById(userId, planId);
     }
 
+    public ArrayList<Like> findByuserId(int userId){
+        return this.likeRepository.findByUserId(userId);
+    }
+
+    public ArrayList<Like> findByplanId(int planId){
+        return this.likeRepository.findByplanId(planId);
+    }
 }

@@ -15,8 +15,14 @@ public interface LikeRepository extends JpaRepository<Like,Long> {
     @Override
     Like save(Like entity);
 
-    Like findById(int id);
+    @Query("SELECT l FROM Like l WHERE l.user_id = :userId and l.is_liked = 1")
+    ArrayList<Like> findByUserId(int userId);
+
+    @Query("SELECT l FROM Like l WHERE l.plan_id = :planId and l.is_liked = 1")
+    ArrayList<Like> findByplanId(int planId);
 
     @Query("SELECT l FROM Like l WHERE l.user_id = :userId AND l.plan_id = :planId")
     Like findLikeById(int userId, int planId);
+
+
 }

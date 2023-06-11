@@ -31,6 +31,7 @@ public class LikeController {
         this.likeMapper=likeMapper;
     }
 
+    // 좋아요 전체 조회
     @GetMapping("/likes")
     public ResponseEntity<?> slectAll(){
         List<Like> lists = likeService.findAll();
@@ -45,6 +46,37 @@ public class LikeController {
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
 
+    // 유저별 좋아요 조회
+    @GetMapping("/likes/user/{user_id}")
+    public ResponseEntity<?> slectByUser(@PathVariable int user_id){
+        List<Like> lists = likeService.findByuserId(user_id);
+        ArrayList<LikeDTO> dtoList = new ArrayList<>();
+        if (lists.size() == 0) {
+            String errorMessage = "좋아요 내역이 없어요.";
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+        }
+        for(Like like : lists){
+            dtoList.add(likeMapper.likeToLikeDTO(like));
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+    }
+
+    // 여행일정별 좋아요 조회
+    @GetMapping("/likes/plan/{plan_id}")
+    public ResponseEntity<?> slectByPlan(@PathVariable int plan_id){
+        List<Like> lists = likeService.findByplanId(plan_id);
+        ArrayList<LikeDTO> dtoList = new ArrayList<>();
+        if (lists.size() == 0) {
+            String errorMessage = "좋아요 내역이 없어요.";
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+        }
+        for(Like like : lists){
+            dtoList.add(likeMapper.likeToLikeDTO(like));
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+    }
+
+    // 좋아요 추가
     @PostMapping("/likes/{plan_id}/{user_id}")
     public ResponseEntity<?> saveLike(@PathVariable int plan_id,@PathVariable int user_id) {
         Like like = likeService.findLikeById(user_id,plan_id);
@@ -72,6 +104,7 @@ public class LikeController {
         }
     }
 
+    // 좋아요 취소
     @PostMapping ("/likes/cancel/{plan_id}/{user_id}")
     public ResponseEntity<?> cancelLike(@PathVariable int plan_id,@PathVariable int user_id) {
         Like like = likeService.findLikeById(user_id,plan_id);
