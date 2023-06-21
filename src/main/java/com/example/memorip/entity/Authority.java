@@ -9,14 +9,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "authority")
+@Table(name = "authorities")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Authority {
-
     @Id
     @Column(name = "authority_name", length = 50)
     private String authorityName;
