@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -45,4 +46,7 @@ public final class Plan {
 
     @Column
     private int views;
+
+    @OneToMany(mappedBy = "plan")
+    private List<Timeline> timelines;
 }
