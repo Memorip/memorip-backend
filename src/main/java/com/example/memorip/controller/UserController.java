@@ -26,11 +26,9 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final UserMapper userMapper;
 
-    public UserController(UserService userService, UserMapper userMapper) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userMapper = userMapper;
     }
 
     @Operation(summary = "이메일 중복검사", description = "이미 있는 이메일이라면 true, 아직 없다면 false를 return 합니다.")
@@ -47,7 +45,7 @@ public class UserController {
     public ResponseEntity<DefaultRes<UserDTO>> signup(
             @Valid @RequestBody SignUpDTO signUpDTO
     ) {
-        UserDTO user = userMapper.userToUserDTO(userService.signup(signUpDTO));
+        UserDTO user = UserMapper.INSTANCE.userToUserDTO(userService.signup(signUpDTO));
         return new ResponseEntity<>(DefaultRes.res(201, "회원가입 성공", user), HttpStatus.CREATED);
     }
 
@@ -55,7 +53,7 @@ public class UserController {
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<DefaultRes<UserDTO>> getMyUserInfo() {
-        UserDTO user = userMapper.userToUserDTO(userService.getMyUserWithAuthorities());
+        UserDTO user = UserMapper.INSTANCE.userToUserDTO(userService.getMyUserWithAuthorities());
         return new ResponseEntity<>(DefaultRes.res(200, "본인 정보 조회 성공", user), HttpStatus.OK);
     }
 
@@ -63,7 +61,7 @@ public class UserController {
     @GetMapping("/users/{email}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<DefaultRes<UserDTO>> getUserInfo(@PathVariable String email) {
-        UserDTO user = userMapper.userToUserDTO(userService.getUserWithAuthorities(email));
+        UserDTO user = UserMapper.INSTANCE.userToUserDTO(userService.getUserWithAuthorities(email));
         return new ResponseEntity<>(DefaultRes.res(200, "유저 정보 조회 성공", user), HttpStatus.OK);
     }
 
@@ -71,7 +69,7 @@ public class UserController {
     @GetMapping("/users")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<DefaultRes<List<UserDTO>>> getUsers() {
-        List<UserDTO> users = userMapper.usersToUserDTOs(userService.getUsers());
+        List<UserDTO> users = UserMapper.INSTANCE.usersToUserDTOs(userService.getUsers());
         return new ResponseEntity<>(DefaultRes.res(200, "유저 목록 조회 성공", users), HttpStatus.OK);
     }
 
@@ -82,7 +80,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<DefaultRes<UserDTO>> deleteUser() {
         String email = SecurityUtil.getCurrentUsername().orElse(null);
-        UserDTO deleteUser = userMapper.userToUserDTO(userService.deactivateUser(email));
+        UserDTO deleteUser = UserMapper.INSTANCE.userToUserDTO(userService.deactivateUser(email));
         return new ResponseEntity<>(DefaultRes.res(200, "탈퇴 성공", deleteUser), HttpStatus.OK);
     }
 
@@ -90,7 +88,7 @@ public class UserController {
     @DeleteMapping ("/users/{email}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<DefaultRes<UserDTO>> deleteUser(@PathVariable String email) {
-        UserDTO deleteUser = userMapper.userToUserDTO(userService.deactivateUser(email));
+        UserDTO deleteUser = UserMapper.INSTANCE.userToUserDTO(userService.deactivateUser(email));
         return new ResponseEntity<>(DefaultRes.res(200, "탈퇴 성공", deleteUser), HttpStatus.OK);
     }
 }

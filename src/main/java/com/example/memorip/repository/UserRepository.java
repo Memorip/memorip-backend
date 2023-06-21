@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     @Override
-    @Query("select u from User u where u.isActive = true")
+    @Query("SELECT u FROM User u WHERE u.isActive = true")
     ArrayList<User> findAll();
 
     // @EntityGraph : 쿼리가 수행이 될때 Lazy조회가 아니고 Eager 조회로 authorities 정보를 같이 가져오게 된다.
