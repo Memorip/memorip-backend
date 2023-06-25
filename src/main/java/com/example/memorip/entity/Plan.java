@@ -42,4 +42,7 @@ public final class Plan {
 
     @Column
     private int views;
+
+    @Column
+    private int likes;
 }

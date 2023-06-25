@@ -22,6 +22,7 @@ public class PlanDTO {
     private Date createdAt;
     private Boolean isPublic;
     private int views;
+    private int likes;
 }
 
 
