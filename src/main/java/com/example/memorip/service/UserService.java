@@ -1,11 +1,9 @@
 package com.example.memorip.service;
 
 import com.example.memorip.dto.SignUpDTO;
-import com.example.memorip.dto.UserDTO;
 import com.example.memorip.entity.Authority;
 import com.example.memorip.entity.User;
-import com.example.memorip.exception.NotFoundUserException;
-import com.example.memorip.repository.UserMapper;
+import com.example.memorip.exception.NotFoundException;
 import com.example.memorip.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,12 +19,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class UserService {
-    private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserMapper userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userMapper = userMapper;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -37,9 +33,9 @@ public class UserService {
     }
 
     @Transactional
-    public SignUpDTO signup(SignUpDTO signUpDTO){
+    public User signup(SignUpDTO signUpDTO){
         if(userRepository.findOneWithAuthoritiesByEmail(signUpDTO.getEmail()).orElse(null) != null){
-            throw new RuntimeException("이미 가입되어 있는 유저입니다.");
+            throw new IllegalArgumentException("이미 가입되어 있는 유저입니다.");
         }
 
         Authority authority = Authority.builder()
@@ -55,39 +51,36 @@ public class UserService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        return SignUpDTO.from(userRepository.save(user));
+        return userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
-    public UserDTO getUserWithAuthorities(String email) {
-        return userMapper.userToUserDTO(userRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
+    public User getUserWithAuthorities(String email) {
+        return userRepository.findOneWithAuthoritiesByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found:"+email));
     }
 
     @Transactional(readOnly = true)
-    public UserDTO getMyUserWithAuthorities() {
-        return userMapper.userToUserDTO(
-                SecurityUtil.getCurrentUsername()
+    public User getMyUserWithAuthorities() {
+        return SecurityUtil.getCurrentUsername()
                         .flatMap(userRepository::findOneWithAuthoritiesByEmail)
-                        .orElseThrow(() -> new NotFoundUserException("User not found"))
-        );
+                        .orElseThrow(() -> new NotFoundException("User not found"));
+
     }
 
-    public List<UserDTO> getUsers() {
-        List<User> users = userRepository.findAll();
-        return userMapper.usersToUserDTOs(users);
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 
     @Transactional
-    public UserDTO deactivateUser(String email){
-        User user = userRepository.findOneWithAuthoritiesByEmail(email).orElse(null);
-        if(user == null){
-            throw new RuntimeException("존재하지 않는 유저입니다.");
-        }
+    public User deactivateUser(String email){
+        User user = userRepository.findOneWithAuthoritiesByEmail(email)
+                .orElseThrow(()-> new NotFoundException("User not found:"+email));
 
         user.setEmail(user.getEmail() + "_deactivated_" + new Date().getTime());
         user.setIsActive(false);
 
-        return userMapper.userToUserDTO(userRepository.save(user));
+        return userRepository.save(user);
     }
 
 }
