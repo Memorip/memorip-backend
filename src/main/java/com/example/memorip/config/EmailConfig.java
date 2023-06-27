@@ -52,9 +52,4 @@ public class EmailConfig {
 
         return javaMailSender;
     }
-
-//    @Bean
-//    public EmailSender emailSender(JavaMailSender javaMailSender) {
-//        return new EmailSender(javaMailSender);
-//    }
 }

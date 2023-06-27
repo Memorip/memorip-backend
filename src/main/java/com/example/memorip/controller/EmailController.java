@@ -27,18 +27,17 @@ public class EmailController {
     @Operation(summary = "인증코드 전송", description = "이메일 인증코드를 전송하는 메서드입니다.")
     @GetMapping("/sendCode")
     @ResponseBody
-    public ResponseEntity<?> sendCode(
+    public ResponseEntity<DefaultRes<Void>> sendCode(
             @Parameter(description = "인증받을 이메일", required = true)
             @RequestParam("rcv") String emailRcv) throws Exception {
-        log.info("rcv: " + emailRcv);
         emailService.sendVerificationCodeEmail(emailRcv);
-        return new ResponseEntity<>(DefaultRes.res(200, "이메일 전송 완료", ""), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(200, "이메일 전송 완료"), HttpStatus.OK);
     }
 
     @Operation(summary = "인증코드 확인", description = "이메일 인증코드가 맞는지 검증하는 메서드입니다.")
     @GetMapping("/verifyCode")
     @ResponseBody
-    public ResponseEntity<?> verifyCode(
+    public ResponseEntity<DefaultRes<Void>> verifyCode(
             @Parameter(description = "인증받을 이메일", required = true)
             @RequestParam("rcv") String emailRcv,
             @Parameter(description = "인증코드", required = true)
@@ -46,7 +45,7 @@ public class EmailController {
         log.info("rcv: " + emailRcv);
         log.info("code: " + code);
         return emailService.verifyEmailCode(emailRcv, code)?
-                new ResponseEntity<>(DefaultRes.res(200, "이메일 인증 성공", ""), HttpStatus.OK)
-                : new ResponseEntity<>(DefaultRes.res(400, "잘못된 인증코드입니다.", ""), HttpStatus.BAD_REQUEST);
+                new ResponseEntity<>(DefaultRes.res(200, "이메일 인증 성공"), HttpStatus.OK)
+                : new ResponseEntity<>(DefaultRes.res(400, "잘못된 인증코드입니다."), HttpStatus.BAD_REQUEST);
     }
 }
