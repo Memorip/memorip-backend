@@ -40,7 +40,6 @@ public class EmailServiceImpl implements EmailService {
             javaMailSender.send(message);
         }catch (MailException e){
             e.printStackTrace();
-            throw new IllegalArgumentException("이메일 전송에 실패했습니다.");
         }
         redisUtil.setDataExpire(rcv, emailCode, 60*5L);
     }
