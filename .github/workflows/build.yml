@@ -30,6 +30,21 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
+      - name: Set .env for configuration
+        run: |
+          touch ./src/main/resources/env.properties
+          echo "DATASOURCE_DRIVER_CLASS_NAME=${{ secrets.DATASOURCE_DRIVER_CLASS_NAME }}" >> ./src/main/resources/env.properties
+          echo "DATASOURCE_URL=${{ secrets.DATASOURCE_URL }}" >> ./src/main/resources/env.properties
+          echo "DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }}" >> ./src/main/resources/env.properties
+          echo "DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }}" >> ./src/main/resources/env.properties
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ./src/main/resources/env.properties
+          echo "JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }}" >> ./src/main/resources/env.properties
+          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> ./src/main/resources/env.properties
+          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> ./src/main/resources/env.properties
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./src/main/resources/env.properties
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./src/main/resources/env.properties
+          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./src/main/resources/env.properties
+        shell: bash
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
