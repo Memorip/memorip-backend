@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TimelineService {
@@ -53,7 +54,11 @@ public class TimelineService {
 
     @Transactional
     public void deleteById(int id){
-        timelineRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.TIMELINE_NOT_FOUND));
+        Optional<Timeline> timeline = timelineRepository.findById(id);
+        if(timeline.isEmpty()){
+            throw new CustomException(ErrorCode.TIMELINE_NOT_FOUND);
+        }
         timelineRepository.deleteById(id);
     }
+
 }
