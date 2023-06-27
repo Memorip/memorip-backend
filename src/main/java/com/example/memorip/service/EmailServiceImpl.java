@@ -1,9 +1,12 @@
 package com.example.memorip.service;
 
+import com.example.memorip.exception.CustomException;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.util.RedisUtil;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class EmailServiceImpl implements EmailService {
     // 문자 유형을 나타내는 상수 값
@@ -39,7 +43,8 @@ public class EmailServiceImpl implements EmailService {
         try{
             javaMailSender.send(message);
         }catch (MailException e){
-            e.printStackTrace();
+            log.info("이메일 전송 실패", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "이메일 전송 실패");
         }
         redisUtil.setDataExpire(rcv, emailCode, 60*5L);
     }

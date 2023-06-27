@@ -63,8 +63,7 @@ public class JwtTokenProvider {
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                        .map(SimpleGrantedAuthority::new).toList();
 
         User principal = new User(claims.getSubject(), "", authorities);
 
@@ -79,16 +78,16 @@ public class JwtTokenProvider {
             return !claims.getBody().getExpiration().before(new Date());
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN, "잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
             throw new CustomException(ErrorCode.EXPIRED_AUTH_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN, "지원되지 않는 JWT 서명입니다.");
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다.");
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN, "JWT 토큰이 잘못되었습니다.");
         }
     }
 }

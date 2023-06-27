@@ -32,7 +32,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<DefaultRes<String>> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
         log.error("handleCustomException throw CustomException : {}", errorCode);
-        return new ResponseEntity<>(DefaultRes.res(errorCode.getHttpStatus().value(), errorCode.getDetail()), errorCode.getHttpStatus());
+        return new ResponseEntity<>(DefaultRes.res(errorCode.getHttpStatus().value(),
+                e.getMessage().isEmpty()? errorCode.getDetail() : e.getMessage()), errorCode.getHttpStatus());
     }
 
 }
