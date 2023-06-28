@@ -2,10 +2,11 @@ package com.example.memorip.controller;
 
 import com.example.memorip.dto.JwtResponseDTO;
 import com.example.memorip.dto.LoginRequestDTO;
+import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.DefaultRes;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.jwt.JwtAuthenticationFilter;
 import com.example.memorip.jwt.JwtTokenProvider;
-import com.example.memorip.util.Error;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,7 +44,7 @@ public class AuthController {
 
     @Operation(summary = "로그인", description = "로그인 메서드입니다.")
     @PostMapping("/login")
-    public ResponseEntity<?> authorize(
+    public ResponseEntity<DefaultRes<JwtResponseDTO>> authorize(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "로그인 요청 객체", required = true, content = @Content(schema = @Schema(implementation = LoginRequestDTO.class)))
             @Valid @RequestBody LoginRequestDTO loginDto) {
         try{
@@ -61,8 +62,7 @@ public class AuthController {
             return new ResponseEntity<>(
                     DefaultRes.res(200, "로그인 성공", new JwtResponseDTO(jwt)), httpHeaders, HttpStatus.OK);
         }catch (Exception e){
-            Error error = new Error(401, "잘못된 이메일 또는 패스워드를 입력했습니다.");
-            return new ResponseEntity<>(DefaultRes.res(error.getStatus(), error.getMessage(), ""), HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.memorip.service;
 
 import com.example.memorip.entity.User;
+import com.example.memorip.exception.CustomException;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//@Service
 @Slf4j
 @Component("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -28,13 +29,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(final String username) {
         return userRepository.findOneWithAuthoritiesByEmail(username)
-                .map(user -> createUser(username, user))
+                .map(this::createUser)
                 .orElseThrow(() -> new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
 
-    private org.springframework.security.core.userdetails.User createUser(String email, User user) {
+    private org.springframework.security.core.userdetails.User createUser(User user) {
         if (!user.getIsActive()) {
-            throw new RuntimeException(email + " -> 활성화되어 있지 않습니다.");
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()

@@ -3,7 +3,8 @@ package com.example.memorip.service;
 import com.example.memorip.dto.SignUpDTO;
 import com.example.memorip.entity.Authority;
 import com.example.memorip.entity.User;
-import com.example.memorip.exception.NotFoundException;
+import com.example.memorip.exception.CustomException;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +36,7 @@ public class UserService {
     @Transactional
     public User signup(SignUpDTO signUpDTO){
         if(userRepository.findOneWithAuthoritiesByEmail(signUpDTO.getEmail()).orElse(null) != null){
-            throw new IllegalArgumentException("이미 가입되어 있는 유저입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
         Authority authority = Authority.builder()
@@ -57,15 +58,14 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getUserWithAuthorities(String email) {
         return userRepository.findOneWithAuthoritiesByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found:"+email));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
     public User getMyUserWithAuthorities() {
         return SecurityUtil.getCurrentUsername()
                         .flatMap(userRepository::findOneWithAuthoritiesByEmail)
-                        .orElseThrow(() -> new NotFoundException("User not found"));
-
+                        .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED_USER));
     }
 
     public List<User> getUsers() {
@@ -75,7 +75,7 @@ public class UserService {
     @Transactional
     public User deactivateUser(String email){
         User user = userRepository.findOneWithAuthoritiesByEmail(email)
-                .orElseThrow(()-> new NotFoundException("User not found:"+email));
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.setEmail(user.getEmail() + "_deactivated_" + new Date().getTime());
         user.setIsActive(false);
