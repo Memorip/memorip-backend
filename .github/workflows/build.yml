@@ -44,6 +44,8 @@ jobs:
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./src/main/resources/env.properties
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./src/main/resources/env.properties
           echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ./src/main/resources/env.properties
+          echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> ./src/main/resources/env.properties
+          echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> ./src/main/resources/env.properties
         shell: bash
       - name: Build and analyze
         env:
