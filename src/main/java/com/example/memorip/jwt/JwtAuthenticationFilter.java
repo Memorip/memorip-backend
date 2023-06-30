@@ -2,8 +2,10 @@ package com.example.memorip.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -22,8 +24,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // 토큰의 인증정보를 SecurityContext에 저장하는 역할 수행
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
         // 헤더에서 jwt를 받아옴
         String jwtToken = extractJwtFromRequest(request);
 
@@ -38,14 +40,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // Request Header에서 토큰 정보를 꺼내오기 위한 메소드
+    // Request에서 토큰 정보를 꺼내오기 위한 메소드
     private String extractJwtFromRequest(HttpServletRequest request) {
-        // 요청에서 JWT 토큰을 추출하는 로직 작성
-        // 예시로 Authorization 헤더에서 JWT 토큰을 추출하는 경우:
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+        // 쿠키에서 JWT 토큰 추출
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("accessToken")) {
+                    return cookie.getValue();
+                }
+            }
         }
+
         return null;
     }
 }

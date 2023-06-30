@@ -1,7 +1,5 @@
 package com.example.memorip.jwt;
 
-import com.example.memorip.exception.CustomException;
-import com.example.memorip.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -72,22 +70,19 @@ public class JwtTokenProvider {
 
     // 토큰 유효성 + 만료일자 확인
     public boolean validateToken(String token) {
-        Key signingKey = Keys.hmacShaKeyFor(secretKey.getBytes());
-        Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token);
         try {
+            Key signingKey = Keys.hmacShaKeyFor(secretKey.getBytes());
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN, "잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
-            throw new CustomException(ErrorCode.EXPIRED_AUTH_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN, "지원되지 않는 JWT 서명입니다.");
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다.");
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN, "JWT 토큰이 잘못되었습니다.");
         }
+        return false;
     }
 }
