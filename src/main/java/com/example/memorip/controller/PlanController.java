@@ -36,7 +36,7 @@ public class PlanController {
     }
 
     @Operation(summary = "여행일정 전체 조회", description = "여행일정을 전체 조회하는 메서드입니다.")
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<?> getPlans(){
         List<Plan> lists = planService.findAll();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
@@ -150,11 +150,12 @@ public class PlanController {
     @Operation(summary = "여행일정 삭제", description = "여행일정을 삭제하는 메서드입니다.")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePlanById(@PathVariable int id) {
-        Plan removedPlan = planService.deleteById(id);
-        if(removedPlan == null) {
+        Plan plan = planService.findById(id);
+        if(plan == null) {
             String errorMessage = "삭제할 여행 계획이 없어요.";
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
         }
+        planService.deleteById(id);
         return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
     }
 }

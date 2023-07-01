@@ -34,8 +34,6 @@ public class PlanService {
 
     @Transactional
     public Plan findById(int id){
-        Plan plan = planRepository.findById(id);
-        if(plan==null) return null;
         return planRepository.findById(id);
     }
 
@@ -53,5 +51,10 @@ public class PlanService {
         Plan target = optionalPlan.get();
         planRepository.delete(target);
         return target;
+    }
+
+    @Transactional
+    public Plan findByUserIdAndId(int userId, int planId){
+        return planRepository.findByUserIdAndId(userId,planId);
     }
 }

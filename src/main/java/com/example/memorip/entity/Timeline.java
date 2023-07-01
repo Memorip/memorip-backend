@@ -28,7 +28,7 @@ public class Timeline {
     @Column
     private String memo;
 
-    @Column(columnDefinition = "TEXT")
+    @Column
     private String data;
 
     @Column(name = "created_at", updatable = false, nullable = false)

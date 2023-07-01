@@ -16,5 +16,5 @@ public class TravelDTO {
     private int views;
     private int likes;
     private LocalDateTime createdAt;
-    private boolean isPublic;
+    private Boolean isPublic;
 }

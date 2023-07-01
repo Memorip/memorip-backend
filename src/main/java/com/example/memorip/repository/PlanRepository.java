@@ -1,6 +1,5 @@
 package com.example.memorip.repository;
 
-import com.example.memorip.entity.Like;
 import com.example.memorip.entity.Plan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +21,5 @@ public interface PlanRepository extends JpaRepository<Plan,Long> {
     @Query("SELECT l FROM Plan l order by l.likes desc ")
     ArrayList<Plan> sortByLikes();
 
+    Plan findByUserIdAndId(int userId,int planId);
 }
