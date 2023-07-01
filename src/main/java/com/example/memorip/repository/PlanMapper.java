@@ -12,27 +12,15 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface PlanMapper {
-
     PlanMapper INSTANCE = Mappers.getMapper(PlanMapper.class);
 
-    @Mapping(source = "user_id", target = "userId")
     @Mapping(source = "city", target = "city",qualifiedByName = "cityToList")
-    @Mapping(source = "start_date", target = "startDate")
-    @Mapping(source = "end_date", target = "endDate")
-    @Mapping(source = "trip_type", target = "tripType")
     @Mapping(source = "participants", target = "participants",qualifiedByName = "participantsToIntegers")
-    @Mapping(source = "created_at", target = "createdAt")
-    @Mapping(source = "is_public", target = "isPublic")
+    @Mapping(source = "user.id", target = "userId")
     PlanDTO planToPlanDTO(Plan plan);
 
-    @Mapping(source = "userId", target = "user_id")
     @Mapping(source = "city", target = "city",qualifiedByName = "cityListToString")
-    @Mapping(source = "startDate", target = "start_date")
-    @Mapping(source = "endDate", target = "end_date")
-    @Mapping(source = "tripType", target = "trip_type")
     @Mapping(source = "participants", target = "participants",qualifiedByName = "participantsIntegerToString")
-    @Mapping(source = "createdAt", target = "created_at")
-    @Mapping(source = "isPublic", target = "is_public")
     Plan planDTOtoPlan(PlanDTO dto);
 
     @Named("cityToList")

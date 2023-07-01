@@ -12,19 +12,21 @@ import com.example.memorip.repository.PlanMapper;
 import com.example.memorip.service.LikeService;
 import com.example.memorip.service.PlanService;
 import com.example.memorip.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+@Tag(name = "like", description = "여행일정 좋아요 관련 api 입니다.")
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/likes")
 @Validated
 public class LikeController {
     private final LikeService likeService;
@@ -34,7 +36,7 @@ public class LikeController {
     private final PlanMapper planMapper;
 
 
-    LikeController(LikeService likeService, UserService userService, PlanService planService, LikeMapper likeMapper, PlanMapper planMapper){
+    public LikeController(LikeService likeService, UserService userService, PlanService planService, LikeMapper likeMapper, PlanMapper planMapper){
         this.likeService=likeService;
         this.userService = userService;
         this.planService = planService;
@@ -43,7 +45,8 @@ public class LikeController {
     }
 
     // 유저별 좋아요 조회
-    @GetMapping("/likes/user/{userId}")
+    @Operation(summary = "유저별 좋아요 조회", description = "유저별 좋아요수를 조회하는 메서드입니다.")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<?> getLikesByUser(@PathVariable int userId){
         List<Like> lists = likeService.findByuserId(userId);
         ArrayList<LikeDTO> dtoList = new ArrayList<>();
@@ -58,7 +61,8 @@ public class LikeController {
     }
 
     // 여행일정별 좋아요 조회
-    @GetMapping("/likes/plan/{planId}")
+    @Operation(summary = "여행일정별 좋아요 조회", description = "여행일정별로 좋아요를 조회하는 메서드입니다.")
+    @GetMapping("/plan/{planId}")
     public ResponseEntity<?> getLikesByPlan(@PathVariable int planId){
 
 
@@ -75,24 +79,21 @@ public class LikeController {
     }
 
     // 좋아요 추가
-    @PostMapping("/likes")
+    @Operation(summary = "좋아요 추가", description = "여행일정에 좋아요를 추가하는 메서드입니다.")
+    @PostMapping("/")
     public ResponseEntity<?> saveLike(@Valid @RequestBody PlanLikeDTO dto) {
 
         int userId = dto.getUserId();
 
-        log.info("userId:"+dto.getUserId());
 
         int planId = dto.getPlanId();
-        log.info("planId:"+dto.getPlanId());
         User user = userService.getUserById(userId);
-        log.info("user:"+user.toString());
         if(user==null){
             String errorMessage = "일치하는 사용자가 없어요.";
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
         }
 
         Plan plan = planService.findById(planId);
-        log.info("plan:"+plan.toString());
 
         if (plan==null){
             String errorMessage = "조회되는 여행 계획이 없어요.";
@@ -154,7 +155,8 @@ public class LikeController {
     }
 
     // 좋아요 취소
-    @PatchMapping ("/likes/cancel")
+    @Operation(summary = "좋아요 취소", description = "여행일정에 좋아요를 취소하는 메서드입니다.")
+    @PatchMapping ("/cancel")
     public ResponseEntity<?> cancelLike(@Valid @RequestBody PlanLikeDTO dto) {
         int userId = dto.getUserId();
         int planId = dto.getPlanId();
@@ -179,6 +181,9 @@ public class LikeController {
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
         }else{
             LikeDTO likeDto = likeMapper.likeToLikeDTO(like);
+            likeDto.setPlanId(planId);
+            likeDto.setUserId(userId);
+
             if(likeDto.getIsLiked()==1){ // 좋아요 취소
                 likeDto.setIsLiked(0);
             }else{
@@ -195,8 +200,9 @@ public class LikeController {
             // 좋아요 취소
             PlanDTO plandto = planMapper.planToPlanDTO(plan);
             plandto.setLikes(plandto.getLikes()-1);
+
             Plan planentity = planMapper.planDTOtoPlan(plandto);
-            // planentity.setUser(user);
+            planentity.setUser(user);
             Plan savedPlan = planService.save(planentity);
 
             return new ResponseEntity<>(DefaultRes.res(200, "success", savedLike), HttpStatus.OK);

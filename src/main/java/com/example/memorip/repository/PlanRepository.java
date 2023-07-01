@@ -19,4 +19,7 @@ public interface PlanRepository extends JpaRepository<Plan,Long> {
     @Query("SELECT l FROM Plan l order by l.views desc ")
     ArrayList<Plan> sortByViews();
 
+    @Query("SELECT l FROM Plan l order by l.likes desc ")
+    ArrayList<Plan> sortByLikes();
+
 }

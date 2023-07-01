@@ -15,31 +15,31 @@ public class LikeService {
 
     private final LikeRepository likeRepository;
 
-    private LikeService(LikeRepository likeRepository){
+    public LikeService(LikeRepository likeRepository){
         this.likeRepository=likeRepository;
     }
 
-
+    @Transactional
     public ArrayList<Like> findAll(){
         return likeRepository.findAll();
     }
 
-
+    @Transactional
     public Like save(Like entity){
         return likeRepository.save(entity);
     }
 
-
+    @Transactional
     public Like findLikeById(int userId, int planId) {
         return likeRepository.findLikeById(userId, planId);
     }
 
-
+    @Transactional
     public ArrayList<Like> findByuserId(int userId){
         return this.likeRepository.findByUserId(userId);
     }
 
-
+    @Transactional
     public ArrayList<Like> findByplanId(int planId){
         return this.likeRepository.findByplanId(planId);
     }
