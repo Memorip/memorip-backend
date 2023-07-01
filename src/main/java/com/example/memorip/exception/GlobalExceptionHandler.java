@@ -23,17 +23,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(DefaultRes.res(400, errorMessage), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<DefaultRes<String>> handleIllegalArgumentException(IllegalArgumentException e) {
-        return new ResponseEntity<>(DefaultRes.res(400, e.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<DefaultRes<String>> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
         log.error("handleCustomException throw CustomException : {}", errorCode);
         return new ResponseEntity<>(DefaultRes.res(errorCode.getHttpStatus().value(),
                 e.getMessage().isEmpty()? errorCode.getDetail() : e.getMessage()), errorCode.getHttpStatus());
+    }
+
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<DefaultRes<Void>> Exception(Exception e) {
+        DefaultRes<Void> response = new DefaultRes<>(400, e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -2,6 +2,8 @@ package com.example.memorip.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 @Getter
 @Setter
@@ -10,28 +12,36 @@ import java.util.Date;
 public final class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private int id;
-    @Column
-    private int user_id;
-    @Column
+
+    @ManyToOne
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
+
+    @Column(nullable = false)
     private String city;
-    @Column
-    private Date start_date;
-    @Column
-    private Date end_date;
-    @Column
-    private String trip_type;
+
+    @Column(name = "start_date",nullable = false)
+    private Date startDate;
+
+    @Column(name="end_date",nullable = false)
+    private Date endDate;
+
+    @Column(name = "trip_type")
+    private String tripType;
+
     @Column
     private String participants;
-    @Column
-    private Date created_at;
-    @Column
-    private Boolean is_public;
 
-    @Column
+    @Column(name = "created_at",nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "is_public",nullable = false)
+    private Boolean isPublic;
+
+    @Column(nullable = false)
     private int views;
 
-    @Column
+    @Column(nullable = false)
     private int likes;
 }

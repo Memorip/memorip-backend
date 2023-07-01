@@ -4,6 +4,8 @@ import com.example.memorip.entity.Plan;
 import com.example.memorip.repository.PlanRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -11,28 +13,38 @@ import java.util.Optional;
 @Service
 public class PlanService {
     private final PlanRepository planRepository;
-    private PlanService(PlanRepository planRepository){
+    public PlanService(PlanRepository planRepository){
         this.planRepository=planRepository;
     }
 
-    public ArrayList<Plan> getAll(){
+    @Transactional
+    public ArrayList<Plan> findAll(){
         return planRepository.findAll();
     }
 
+    @Transactional
     public ArrayList<Plan> sortByViews(){
         return planRepository.sortByViews();
     }
 
+    @Transactional
+    public ArrayList<Plan> sortByLikes(){
+        return planRepository.sortByLikes();
+    }
+
+    @Transactional
     public Plan findById(int id){
         Plan plan = planRepository.findById(id);
         if(plan==null) return null;
         return planRepository.findById(id);
     }
+
+    @Transactional
     public Plan save(Plan entity){
         return planRepository.save(entity);
     }
 
-
+    @Transactional
     public Plan deleteById(int id) {
         Optional<Plan> optionalPlan = Optional.ofNullable(planRepository.findById(id));
         if (optionalPlan.isEmpty()) {
