@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.*;
 @Getter
 @Setter
@@ -17,7 +19,7 @@ public class PlanDTO {
     private Date endDate;
     private String tripType;
     private List<Integer> participants;
-    private Date createdAt;
+    private LocalDateTime createdAt;
     private Boolean isPublic;
     private int views;
     private int likes;

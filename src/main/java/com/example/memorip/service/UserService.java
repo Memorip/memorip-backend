@@ -83,4 +83,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public User getUserById(int id){
+        return userRepository.findById(id);
+    }
 }

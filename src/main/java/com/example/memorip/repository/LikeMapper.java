@@ -10,16 +10,9 @@ import org.mapstruct.factory.Mappers;
 public interface LikeMapper {
     LikeMapper INSTANCE = Mappers.getMapper(LikeMapper.class);
 
-
-    @Mapping(source = "user_id", target = "userId")
-    @Mapping(source = "plan_id", target = "planId")
-    @Mapping(source = "is_liked",target = "isLiked")
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "plan.id", target = "planId")
     LikeDTO likeToLikeDTO(Like like);
 
-    @Mapping(source = "userId",target = "user_id")
-    @Mapping(source = "planId", target = "plan_id")
-    @Mapping(source = "isLiked",target = "is_liked")
     Like LikeDTOtoLike(LikeDTO dto);
-
-
 }

@@ -11,15 +11,16 @@ import lombok.Setter;
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private int id;
 
-    @Column
-    private int user_id;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column
-    private int plan_id;
+    @ManyToOne
+    @JoinColumn(name = "plan_id", nullable = false)
+    private Plan plan;
 
-    @Column
-    private int is_liked;
+    @Column(name = "is_liked", nullable = false)
+    private int isLiked;
 }
