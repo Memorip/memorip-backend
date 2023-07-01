@@ -3,6 +3,7 @@ package com.example.memorip.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,6 +27,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<DefaultRes<String>> handleIllegalArgumentException(IllegalArgumentException e) {
         return new ResponseEntity<>(DefaultRes.res(400, e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<DefaultRes<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        DefaultRes<Void> response = new DefaultRes<>(400, "잘못된 요청입니다. " + e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CustomException.class)
