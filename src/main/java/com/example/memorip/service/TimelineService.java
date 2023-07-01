@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,25 @@ public class TimelineService {
         return timelineRepository.save(timeline);
     }
 
+    @Transactional
+    public List<Timeline> saveAll(List<TimelineDTO> timelineDTOList) {
+        List<Timeline> timelines = new ArrayList<>();
+        for (TimelineDTO timelineDTO : timelineDTOList) {
+            int planId = timelineDTO.getPlanId();
+            Plan plan = planRepository.findById(planId);
+            if (plan == null) {
+                throw new CustomException(ErrorCode.PLAN_NOT_FOUND);
+            }
+
+            Timeline timeline = TimelineMapper.INSTANCE.timelineDTOToTimeline(timelineDTO);
+            timeline.setPlan(plan);
+            timeline.setCreatedAt(LocalDateTime.now());
+
+            timelines.add(timeline);
+        }
+        return timelineRepository.saveAll(timelines);
+    }
+
     @Transactional(readOnly = true)
     public List<Timeline> findByPlanId(int planId){
         Plan plan = planRepository.findById(planId);
@@ -53,12 +73,13 @@ public class TimelineService {
     }
 
     @Transactional
-    public void deleteById(int id){
-        Optional<Timeline> timeline = timelineRepository.findById(id);
-        if(timeline.isEmpty()){
-            throw new CustomException(ErrorCode.TIMELINE_NOT_FOUND);
+    public void deleteByIds(List<Integer> ids) {
+        for (int id : ids) {
+            Optional<Timeline> timeline = timelineRepository.findById(id);
+            if (timeline.isEmpty()) {
+                throw new CustomException(ErrorCode.TIMELINE_NOT_FOUND);
+            }
+            timelineRepository.deleteById(id);
         }
-        timelineRepository.deleteById(id);
     }
-
 }
