@@ -38,6 +38,11 @@ public class PlanService {
     }
 
     @Transactional
+    public ArrayList<Plan> findByUserId(int userId){
+        return planRepository.findByUserId(userId);
+    }
+
+    @Transactional
     public Plan save(Plan entity){
         return planRepository.save(entity);
     }

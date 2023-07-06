@@ -10,6 +10,9 @@ public interface PlanRepository extends JpaRepository<Plan,Long> {
     @Override
     ArrayList<Plan> findAll();
 
+    @Query("SELECT l FROM Plan l where l.user.id = :userId")
+    ArrayList<Plan> findByUserId(int userId);
+
     Plan findById(int id);
 
     @Override
