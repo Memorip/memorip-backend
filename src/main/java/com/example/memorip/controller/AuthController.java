@@ -39,6 +39,10 @@ public class AuthController {
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
+    @Value("${jwt.expiration}")
+    private int expiration;
+
+
     public AuthController(JwtTokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
@@ -48,8 +52,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<DefaultRes<JwtResponseDTO>> authorize(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "로그인 요청 객체", required = true, content = @Content(schema = @Schema(implementation = LoginRequestDTO.class)))
-            @Valid @RequestBody LoginRequestDTO loginDto,
-            @Value("${jwt.expiration}") int tokenValidityInSeconds
+            @Valid @RequestBody LoginRequestDTO loginDto
     ) {
         try{
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -60,9 +63,11 @@ public class AuthController {
 
             String jwt = tokenProvider.createToken(authentication);
 
-            HttpHeaders httpHeaders = new HttpHeaders();
 
-            httpHeaders.add("Set-Cookie", "accessToken=" + jwt + "; Path=/; HttpOnly; Secure; Max-Age=" + tokenValidityInSeconds);
+
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("Set-Cookie", "accessToken=" + jwt + "; Path=/; HttpOnly; Secure; Max-Age=" + expiration);
 
             return new ResponseEntity<>(
                     DefaultRes.res(200, "로그인 성공", new JwtResponseDTO(jwt)), httpHeaders, HttpStatus.OK);
