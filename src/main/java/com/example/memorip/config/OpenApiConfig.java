@@ -22,11 +22,16 @@ public class OpenApiConfig {
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
 
         Components components = new Components().addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-                        .name(jwtSchemeName)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")
-                );
+                .name(jwtSchemeName)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+        ).addSecuritySchemes("cookie", new SecurityScheme()
+                .name("cookie")
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.COOKIE).name("accessToken")
+        );
+
 
         return new OpenAPI()
                 .info(info)
