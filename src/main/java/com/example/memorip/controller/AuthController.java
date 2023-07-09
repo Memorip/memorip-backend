@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +48,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<DefaultRes<JwtResponseDTO>> authorize(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "로그인 요청 객체", required = true, content = @Content(schema = @Schema(implementation = LoginRequestDTO.class)))
-            @Valid @RequestBody LoginRequestDTO loginDto) {
+            @Valid @RequestBody LoginRequestDTO loginDto,
+            @Value("${jwt.expiration}") int tokenValidityInSeconds
+    ) {
         try{
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
@@ -57,7 +61,8 @@ public class AuthController {
             String jwt = tokenProvider.createToken(authentication);
 
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+
+            httpHeaders.add("Set-Cookie", "accessToken=" + jwt + "; Path=/; HttpOnly; Secure; Max-Age=" + tokenValidityInSeconds);
 
             return new ResponseEntity<>(
                     DefaultRes.res(200, "로그인 성공", new JwtResponseDTO(jwt)), httpHeaders, HttpStatus.OK);
