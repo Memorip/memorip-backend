@@ -63,11 +63,7 @@ public class AuthController {
 
             String jwt = tokenProvider.createToken(authentication);
 
-
-
-
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("Set-Cookie", "accessToken=" + jwt + "; Path=/; HttpOnly; Secure; Max-Age=" + expiration + "; SameSite=None");
 
             return new ResponseEntity<>(
                     DefaultRes.res(200, "로그인 성공", new JwtResponseDTO(jwt)), httpHeaders, HttpStatus.OK);
