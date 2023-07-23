@@ -14,11 +14,12 @@ public class SearchService {
 
     private final NaverAPI naverAPI;
 
-    public List<SearchLocalDTO> searchLocal(String query){
+    public List<SearchLocalDTO> searchLocal(String query, String sort){
 
         SearchLocalRequest searchLocalRequest = new SearchLocalRequest();
         searchLocalRequest.setQuery(query);
         searchLocalRequest.setDisplay(5);
+        searchLocalRequest.setSort(sort);
 
         SearchLocalResponse searchLocalResponse = naverAPI.searchLocal(searchLocalRequest);
 

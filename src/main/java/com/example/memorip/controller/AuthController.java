@@ -5,16 +5,16 @@ import com.example.memorip.dto.LoginRequestDTO;
 import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.DefaultRes;
 import com.example.memorip.exception.ErrorCode;
-import com.example.memorip.jwt.JwtAuthenticationFilter;
 import com.example.memorip.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,7 +52,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<DefaultRes<JwtResponseDTO>> authorize(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "로그인 요청 객체", required = true, content = @Content(schema = @Schema(implementation = LoginRequestDTO.class)))
-            @Valid @RequestBody LoginRequestDTO loginDto
+            @Valid @RequestBody LoginRequestDTO loginDto, HttpServletResponse response
     ) {
         try{
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -63,13 +63,32 @@ public class AuthController {
 
             String jwt = tokenProvider.createToken(authentication);
 
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("Set-Cookie", "accessToken=" + jwt + "; Path=/; HttpOnly; Secure; Max-Age=" + expiration + "; SameSite=None");
+            Cookie cookie = new Cookie("accessToken", jwt);
+            cookie.setMaxAge(expiration);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
 
             return new ResponseEntity<>(
-                    DefaultRes.res(200, "로그인 성공", new JwtResponseDTO(jwt)), httpHeaders, HttpStatus.OK);
+                    DefaultRes.res(200, "로그인 성공", new JwtResponseDTO(jwt)), HttpStatus.OK);
         }catch (Exception e){
             throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
         }
+    }
+
+    @Operation(summary = "로그아웃", description = "로그아웃 메서드입니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<DefaultRes<Void>> logout(HttpServletRequest request, HttpServletResponse response){
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null){
+            for(Cookie cookie : cookies){
+                if(cookie.getName().equals("accessToken")){
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                }
+            }
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "로그아웃 성공"), HttpStatus.OK);
     }
 }
