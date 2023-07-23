@@ -24,10 +24,10 @@ public class SearchController {
 
     @Operation(summary = "지역 검색", description = "네이버 api를 이용해 지역을 검색합니다.")
     @GetMapping("/searchLocal")
-    public ResponseEntity<DefaultRes<List<SearchLocalDTO>>> searchLocal(@RequestParam String keyword){
+    public ResponseEntity<DefaultRes<List<SearchLocalDTO>>> searchLocal(@RequestParam String keyword, @RequestParam(defaultValue = "random") String sort){
         return new ResponseEntity<>(
                 DefaultRes.res(200, "검색 성공",
-                        searchService.searchLocal(keyword)), org.springframework.http.HttpStatus.OK);
+                        searchService.searchLocal(keyword, sort)), org.springframework.http.HttpStatus.OK);
     }
 
 }

@@ -21,9 +21,17 @@ public class NaverAPITest {
         var search = new SearchLocalRequest();
         search.setQuery("갈비집");
         search.setDisplay(5);
+        search.setSort("random");
+
+        var search2 = new SearchLocalRequest();
+        search2.setQuery("갈비집");
+        search2.setDisplay(5);
+        search2.setSort("comment");
 
         var result = naverAPI.searchLocal(search);
         System.out.println(result);
+        var result2 = naverAPI.searchLocal(search2);
+        System.out.println(result2);
     }
 
     @Test
