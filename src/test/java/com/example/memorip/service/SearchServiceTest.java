@@ -12,7 +12,7 @@ class SearchServiceTest {
 
     @Test
     public void searchTest() {
-        var result = searchService.searchLocal("갈비집");
+        var result = searchService.searchLocal("갈비집", "random");
 
         System.out.println(result);
 
