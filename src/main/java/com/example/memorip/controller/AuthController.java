@@ -67,6 +67,9 @@ public class AuthController {
             cookie.setMaxAge(expiration);
             cookie.setPath("/");
             cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setDomain("memorip.vercel.app");
+            cookie.setDomain("localhost:3000");
             response.addCookie(cookie);
 
             return new ResponseEntity<>(
