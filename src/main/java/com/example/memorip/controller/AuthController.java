@@ -72,7 +72,7 @@ public class AuthController {
                     .sameSite("None")
                     .build();
 
-            response.setHeader("Set-Cookie", cookie.toString());
+            response.addHeader("Set-Cookie", cookie.toString());
 
             return new ResponseEntity<>(
                     DefaultRes.res(200, "로그인 성공", new JwtResponseDTO(jwt)), HttpStatus.OK);
