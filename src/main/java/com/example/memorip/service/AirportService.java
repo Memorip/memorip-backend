@@ -14,7 +14,7 @@ public class AirportService {
     public AirportService(AirportRepository airportRepository) {
         this.airportRepository = airportRepository;
     }
-현
+
     public List<Airport> searchAirport(String keyword) {
         return airportRepository.findByKeyword(keyword);
     }
