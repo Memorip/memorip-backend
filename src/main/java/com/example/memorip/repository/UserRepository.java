@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Integer> {
     @Override
     @Query("SELECT u FROM User u WHERE u.isActive = true")
     ArrayList<User> findAll();
@@ -16,6 +16,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // @EntityGraph : 쿼리가 수행이 될때 Lazy조회가 아니고 Eager 조회로 authorities 정보를 같이 가져오게 된다.
     @EntityGraph(attributePaths = "authorities")
     Optional<User> findOneWithAuthoritiesByEmail(String email);
-
-    User findById(int id);
 }

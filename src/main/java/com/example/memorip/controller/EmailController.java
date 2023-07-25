@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-@Tag(name = "email", description = "email 인증 api 입니다.")
+@Tag(name = "email", description = "email 인증관련 api 입니다.")
 @Slf4j
 @RestController
 @RequestMapping("/api/mail")
@@ -34,7 +34,7 @@ public class EmailController {
         return new ResponseEntity<>(DefaultRes.res(200, "이메일 전송 완료"), HttpStatus.OK);
     }
 
-    @Operation(summary = "인증코드 확인", description = "이메일 인증코드가 맞는지 검증하는 메서드입니다.")
+    @Operation(summary = "인증코드 확인", description = "이메일 인증코드가 맞는지 검증합니다. 인증 성공시 200, 실패시 400을 return")
     @GetMapping("/verifyCode")
     @ResponseBody
     public ResponseEntity<DefaultRes<Void>> verifyCode(
