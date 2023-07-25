@@ -5,6 +5,7 @@ import com.example.memorip.dto.SearchImageResponse;
 import com.example.memorip.dto.SearchLocalRequest;
 import com.example.memorip.dto.SearchLocalResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -28,7 +29,7 @@ public class NaverAPI {
     }
 
     public SearchLocalResponse searchLocal(SearchLocalRequest searchLocalRequest) {
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplateBuilder().build();
 
         var uri = UriComponentsBuilder
                 .fromUriString(localSearchUrl)

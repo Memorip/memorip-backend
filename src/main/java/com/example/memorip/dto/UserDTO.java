@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class UserDTO {
     private int id;
     private String email;
-    private String password;
     private String nickname;
     private String profile;
     @JsonProperty("created_at")
