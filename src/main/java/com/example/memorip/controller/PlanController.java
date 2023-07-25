@@ -36,7 +36,7 @@ public class PlanController {
     }
 
     @Operation(summary = "여행일정 전체 조회", description = "여행일정을 전체 조회하는 메서드입니다.")
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseEntity<?> getPlans(){
         List<Plan> lists = planService.findAll();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
@@ -97,22 +97,7 @@ public class PlanController {
 
         Plan savedPlan = planService.save(entity);
         return new ResponseEntity<>(DefaultRes.res(200, "success", dto), HttpStatus.OK);
-    }
 
-    @Operation(summary = "유저별 여행일정 조회", description = "유저별로 여행일정을 조회하는 메서드입니다.")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getPlanByuserId(@PathVariable int userId){
-        List<Plan> lists = planService.findByUserId(userId);
-        User user = userService.getUserById(userId);
-        if(user==null){
-            String errorMessage = "일치하는 사용자가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
-        }
-        ArrayList<PlanDTO> dtoList = new ArrayList<>();
-        for(Plan plan : lists){
-            dtoList.add(planMapper.planToPlanDTO(plan));
-        }
-        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 추가", description = "여행일정을 추가하는 메서드입니다.")
@@ -165,12 +150,11 @@ public class PlanController {
     @Operation(summary = "여행일정 삭제", description = "여행일정을 삭제하는 메서드입니다.")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePlanById(@PathVariable int id) {
-        Plan plan = planService.findById(id);
-        if(plan == null) {
+        Plan removedPlan = planService.deleteById(id);
+        if(removedPlan == null) {
             String errorMessage = "삭제할 여행 계획이 없어요.";
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
         }
-        planService.deleteById(id);
         return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
     }
 }

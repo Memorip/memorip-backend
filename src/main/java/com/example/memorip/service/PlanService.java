@@ -34,12 +34,9 @@ public class PlanService {
 
     @Transactional
     public Plan findById(int id){
+        Plan plan = planRepository.findById(id);
+        if(plan==null) return null;
         return planRepository.findById(id);
-    }
-
-    @Transactional
-    public ArrayList<Plan> findByUserId(int userId){
-        return planRepository.findByUserId(userId);
     }
 
     @Transactional
@@ -56,10 +53,5 @@ public class PlanService {
         Plan target = optionalPlan.get();
         planRepository.delete(target);
         return target;
-    }
-
-    @Transactional
-    public Plan findByUserIdAndId(int userId, int planId){
-        return planRepository.findByUserIdAndId(userId,planId);
     }
 }
