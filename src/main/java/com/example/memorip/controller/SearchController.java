@@ -22,7 +22,9 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @Operation(summary = "지역 검색", description = "네이버 api를 이용해 지역을 검색합니다.")
+    @Operation(summary = "지역 검색", description = "네이버 검색 api를 이용해 검색 결과를 return. 최대 5개의 결과를 내려주며, 검색 결과 정렬 방법을 참고\n" +
+            "- random: 정확도순으로 내림차순 정렬(기본값)\n" +
+            "- comment: 업체 및 기관에 대한 카페, 블로그의 리뷰 개수순으로 내림차순 정렬 ")
     @GetMapping("/searchLocal")
     public ResponseEntity<DefaultRes<List<SearchLocalDTO>>> searchLocal(@RequestParam String keyword){
         return new ResponseEntity<>(

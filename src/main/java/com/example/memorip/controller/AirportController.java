@@ -29,7 +29,7 @@ public class AirportController {
         this.airportService = airportService;
     }
 
-    @Operation(summary = "공항 검색", description = "공항을 검색합니다.")
+    @Operation(summary = "공항 검색", description = "공항명, 도시명, 공항코드(IATA)로 검색된 공항목록 결과를 리턴합니다.")
     @GetMapping("/search")
     public ResponseEntity<DefaultRes<List<AirportDTO>>> searchAirport(@RequestParam("keyword") String keyword) {
         List<AirportDTO> airportDTOs = AirportMapper.INSTANCE.airportsToAirportDTOs(airportService.searchAirport(keyword));

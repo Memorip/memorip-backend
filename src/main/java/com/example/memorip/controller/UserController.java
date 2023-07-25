@@ -31,7 +31,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "이메일 중복검사", description = "이미 있는 이메일이라면 true, 아직 없다면 false를 return 합니다.")
+    @Operation(summary = "이메일 중복검사", description = "이미 사용중인 이메일이라면 true, 사용가능한 이메일은 false를 return 합니다.")
     @GetMapping("/checkEmail")
     public ResponseEntity<DefaultRes<Boolean>> checkEmail(@RequestParam("email") String email) {
         boolean isEmailTaken = userService.isEmailTaken(email);

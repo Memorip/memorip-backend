@@ -76,7 +76,7 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "로그아웃", description = "로그아웃 메서드입니다.")
+    @Operation(summary = "로그아웃", description = "요청 성공시, 토큰을 쿠키에서 삭제합니다.")
     @PostMapping("/logout")
     public ResponseEntity<DefaultRes<Void>> logout(HttpServletRequest request, HttpServletResponse response){
         Cookie[] cookies = request.getCookies();
