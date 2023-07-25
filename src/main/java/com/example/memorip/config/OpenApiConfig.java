@@ -18,15 +18,12 @@ public class OpenApiConfig {
                 .description("Memorip의 API 명세서입니다.");
 
 
-        String jwtSchemeName = "Authorization";
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
+        SecurityScheme auth = new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.COOKIE).name("accessToken");
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("basicAuth");
 
-        Components components = new Components().addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-                        .name(jwtSchemeName)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")
-                );
+        Components components = new Components().addSecuritySchemes("basicAuth", auth);
+
 
         return new OpenAPI()
                 .info(info)

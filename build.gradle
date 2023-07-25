@@ -2,6 +2,15 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.6'
     id 'io.spring.dependency-management' version '1.1.0'
+    id "org.sonarqube" version "4.2.1.3168"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "Memorip_memorip-backend"
+        property "sonar.organization", "memorip"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
 
 group = 'com.example'
