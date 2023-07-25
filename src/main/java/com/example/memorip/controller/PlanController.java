@@ -1,4 +1,5 @@
 package com.example.memorip.controller;
+
 import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.User;
@@ -35,9 +36,9 @@ public class PlanController {
         this.planMapper=planMapper;
     }
 
-    @Operation(summary = "여행일정 전체 조회", description = "여행일정을 전체 조회하는 메서드입니다.")
+    @Operation(summary = "여행일정 전체 조회", description = "모든 여행일정을 조회하는 메서드입니다.")
     @GetMapping("/")
-    public ResponseEntity<?> getPlans(){
+    public ResponseEntity<DefaultRes<List<PlanDTO>>> getPlans(){
         List<Plan> lists = planService.findAll();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
         for(Plan plan : lists){
@@ -49,12 +50,12 @@ public class PlanController {
     // 조회수 순 정렬
     @Operation(summary = "여행일정 조회순 정렬", description = "여행일정을 조회순으로 정렬하여 조회하는 메서드입니다.")
     @GetMapping("/view/sort")
-    public ResponseEntity<?> sortPlanByViews(){
+    public ResponseEntity<DefaultRes<List<PlanDTO>>> sortPlanByViews(){
         List<Plan> lists = planService.sortByViews();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
         if (lists.size() == 0) {
             String errorMessage = "조회되는 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
         for(Plan plan : lists){
             dtoList.add(planMapper.planToPlanDTO(plan));
@@ -65,12 +66,12 @@ public class PlanController {
     // 좋아요 순 정렬
     @Operation(summary = "여행일정 좋아요순 정렬", description = "여행일정을 좋아요순으로 정렬하여 조회하는 메서드입니다.")
     @GetMapping("/like/sort")
-    public ResponseEntity<?> sortPlanByLikes(){
+    public ResponseEntity<DefaultRes<List<PlanDTO>>> sortPlanByLikes(){
         List<Plan> lists = planService.sortByLikes();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
         if (lists.size() == 0) {
             String errorMessage = "조회되는 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
         for(Plan plan : lists){
             dtoList.add(planMapper.planToPlanDTO(plan));
@@ -80,11 +81,11 @@ public class PlanController {
 
     @Operation(summary = "여행일정 상세조회", description = "여행일정 상세를 조회하는 메서드입니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPlanById(@PathVariable int id){
-        Plan plan = planService.findById(id);
+    public ResponseEntity<DefaultRes<PlanDTO>> getPlanById(@PathVariable int id){
+        Plan     plan = planService.findById(id);
         if (plan == null) {
             String errorMessage = "조회되는 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
         PlanDTO dto = planMapper.planToPlanDTO(plan);
         log.info("dto:"+dto.getUserId());
@@ -102,7 +103,7 @@ public class PlanController {
 
     @Operation(summary = "여행일정 추가", description = "여행일정을 추가하는 메서드입니다.")
     @PostMapping("/add")
-    public ResponseEntity<?> savePlan(@Valid @RequestBody PlanDTO dto) {
+    public ResponseEntity<DefaultRes<Plan>> savePlan(@Valid @RequestBody PlanDTO dto) {
         dto.setViews(0);
 
         int userId = dto.getUserId();
@@ -110,7 +111,7 @@ public class PlanController {
 
         if(user==null){
             String errorMessage = "일치하는 사용자를 찾을 수 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
 
         //1. DTO -> 엔티티 변환
@@ -124,11 +125,11 @@ public class PlanController {
 
     @Operation(summary = "여행일정 수정", description = "여행일정을 수정하는 메서드입니다.")
     @PatchMapping("/add/{id}")
-    public ResponseEntity<?> updatePlan(@Valid @PathVariable int id, @RequestBody PlanDTO dto){
+    public ResponseEntity<DefaultRes<Plan>> updatePlan(@Valid @PathVariable int id, @RequestBody PlanDTO dto){
         Plan plan = planService.findById(id);
         if(plan==null){
             String errorMessage = "수정할 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
         if(dto.getCity()!=null) {
             String cities = planMapper.cityListToString(dto.getCity());
@@ -149,11 +150,11 @@ public class PlanController {
 
     @Operation(summary = "여행일정 삭제", description = "여행일정을 삭제하는 메서드입니다.")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deletePlanById(@PathVariable int id) {
+    public ResponseEntity<DefaultRes> deletePlanById(@PathVariable int id) {
         Plan removedPlan = planService.deleteById(id);
         if(removedPlan == null) {
             String errorMessage = "삭제할 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
     }

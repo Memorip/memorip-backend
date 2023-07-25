@@ -49,7 +49,7 @@ public class AuthController {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
-    @Operation(summary = "로그인", description = "로그인 메서드입니다.")
+    @Operation(summary = "로그인", description = "요청 성공 시, 토큰을 발급하여 쿠키에 담아 전송합니다.")
     @PostMapping("/login")
     public ResponseEntity<DefaultRes<JwtResponseDTO>> authorize(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "로그인 요청 객체", required = true, content = @Content(schema = @Schema(implementation = LoginRequestDTO.class)))
