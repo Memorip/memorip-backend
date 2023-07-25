@@ -85,6 +85,6 @@ public class UserService {
 
     @Transactional
     public User getUserById(int id){
-        return userRepository.findById(id);
+        return userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }
