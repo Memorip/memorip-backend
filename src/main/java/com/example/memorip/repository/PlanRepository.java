@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public interface PlanRepository extends JpaRepository<Plan,Integer> {
     @Override
@@ -22,5 +23,5 @@ public interface PlanRepository extends JpaRepository<Plan,Integer> {
     @Query("SELECT l FROM Plan l order by l.likes desc ")
     ArrayList<Plan> sortByLikes();
 
-    Plan findByUserIdAndId(int userId,int planId);
+    Optional<Plan> findByUserIdAndId(int userId, int planId);
 }
