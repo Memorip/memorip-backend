@@ -1,6 +1,8 @@
 package com.example.memorip.service;
 
 import com.example.memorip.entity.Plan;
+import com.example.memorip.exception.CustomException;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.PlanRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,7 @@ public class PlanService {
 
     @Transactional
     public Plan findById(int id){
-        return planRepository.findById(id);
+        return planRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.PLAN_NOT_FOUND));
     }
 
     @Transactional
@@ -48,14 +50,9 @@ public class PlanService {
     }
 
     @Transactional
-    public Plan deleteById(int id) {
-        Optional<Plan> optionalPlan = Optional.ofNullable(planRepository.findById(id));
-        if (optionalPlan.isEmpty()) {
-            return null;
-        }
-        Plan target = optionalPlan.get();
+    public void deleteById(int id) {
+        Plan target = planRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.PLAN_NOT_FOUND));
         planRepository.delete(target);
-        return target;
     }
 
     @Transactional

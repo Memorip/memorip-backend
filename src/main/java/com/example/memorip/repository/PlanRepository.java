@@ -6,14 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.ArrayList;
 
-public interface PlanRepository extends JpaRepository<Plan,Long> {
+public interface PlanRepository extends JpaRepository<Plan,Integer> {
     @Override
     ArrayList<Plan> findAll();
 
     @Query("SELECT l FROM Plan l where l.user.id = :userId")
     ArrayList<Plan> findByUserId(int userId);
-
-    Plan findById(int id);
 
     @Override
     Plan save(Plan entity);

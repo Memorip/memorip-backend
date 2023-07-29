@@ -5,9 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LikeDTO {
-    private int id;
+public class PlanLikeRequest {
     private int userId;
     private int planId;
-    private int isLiked;
 }

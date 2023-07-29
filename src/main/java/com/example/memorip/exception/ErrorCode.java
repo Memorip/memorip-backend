@@ -21,6 +21,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),
     PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행계획 정보를 찾을 수 없습니다"),
     TIMELINE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 타임라인 정보를 찾을 수 없습니다"),
+    TRAVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행기 정보를 찾을 수 없습니다"),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다"),
