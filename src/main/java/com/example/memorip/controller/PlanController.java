@@ -102,7 +102,7 @@ public class PlanController {
 
     @Operation(summary = "유저별 여행일정 조회", description = "유저별로 여행일정을 조회하는 메서드입니다.")
     @GetMapping("/user/{userId}")
-    public ResponseEntity<DefaultRes<List<PlanDTO>>> getPlanByuserId(@PathVariable int userId){
+    public ResponseEntity<DefaultRes<List<PlanDTO>>> getPlanByUserId(@PathVariable int userId){
         List<Plan> lists = planService.findByUserId(userId);
         User user = userService.getUserById(userId);
 
