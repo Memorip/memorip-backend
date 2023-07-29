@@ -57,6 +57,7 @@ public class PlanService {
 
     @Transactional
     public Plan findByUserIdAndId(int userId, int planId){
-        return planRepository.findByUserIdAndId(userId,planId);
+        return planRepository.findByUserIdAndId(userId,planId).orElseThrow(()->new CustomException(ErrorCode.USER_TRAVEL_NOT_FOUND));
+
     }
 }

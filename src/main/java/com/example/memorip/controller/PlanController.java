@@ -38,7 +38,7 @@ public class PlanController {
 
     @Operation(summary = "여행일정 전체 조회", description = "여행일정을 전체 조회하는 메서드입니다.")
     @GetMapping("")
-    public ResponseEntity<?> getPlans(){
+    public ResponseEntity<DefaultRes<List<PlanDTO>>> getPlans(){
         List<Plan> lists = planService.findAll();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
         for(Plan plan : lists){
@@ -102,13 +102,10 @@ public class PlanController {
 
     @Operation(summary = "유저별 여행일정 조회", description = "유저별로 여행일정을 조회하는 메서드입니다.")
     @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getPlanByuserId(@PathVariable int userId){
+    public ResponseEntity<DefaultRes<List<PlanDTO>>> getPlanByuserId(@PathVariable int userId){
         List<Plan> lists = planService.findByUserId(userId);
         User user = userService.getUserById(userId);
-        if(user==null){
-            String errorMessage = "일치하는 사용자가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
-        }
+
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
         for(Plan plan : lists){
             dtoList.add(planMapper.planToPlanDTO(plan));
@@ -118,7 +115,7 @@ public class PlanController {
 
     @Operation(summary = "여행일정 추가", description = "여행일정을 추가하는 메서드입니다.")
     @PostMapping("/add")
-    public ResponseEntity<DefaultRes<Plan>> savePlan(@Valid @RequestBody PlanDTO dto) {
+    public ResponseEntity<DefaultRes<PlanDTO>> savePlan(@Valid @RequestBody PlanDTO dto) {
         dto.setViews(0);
 
         int userId = dto.getUserId();
@@ -135,12 +132,14 @@ public class PlanController {
         entity.setCreatedAt(LocalDateTime.now());
         //2. 엔티티 -> DB 저장
         Plan savedPlan = planService.save(entity);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", savedPlan), HttpStatus.OK);
+        //3. 엔티티 -> DTO 변환
+        PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
+        return new ResponseEntity<>(DefaultRes.res(200, "success", savedDto), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 수정", description = "여행일정을 수정하는 메서드입니다.")
     @PatchMapping("/add/{id}")
-    public ResponseEntity<DefaultRes<Plan>> updatePlan(@Valid @PathVariable int id, @RequestBody PlanDTO dto){
+    public ResponseEntity<DefaultRes<PlanDTO>> updatePlan(@Valid @PathVariable int id, @RequestBody PlanDTO dto){
         Plan plan = planService.findById(id);
         if(plan==null){
             String errorMessage = "수정할 여행 계획이 없어요.";
@@ -160,12 +159,13 @@ public class PlanController {
         if(dto.getCreatedAt()!=null) plan.setCreatedAt(dto.getCreatedAt());
         if(dto.getIsPublic()!=null) plan.setIsPublic(true);
         Plan savedPlan = planService.save(plan);
-        return new ResponseEntity<>(DefaultRes.res(200, "success",savedPlan), HttpStatus.OK);
+        PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
+        return new ResponseEntity<>(DefaultRes.res(200, "success",savedDto), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 삭제", description = "여행일정을 삭제하는 메서드입니다.")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deletePlanById(@PathVariable int id) {
+    public ResponseEntity<DefaultRes<Void>> deletePlanById(@PathVariable int id) {
         Plan plan = planService.findById(id);
         if(plan == null) {
             String errorMessage = "삭제할 여행 계획이 없어요.";
