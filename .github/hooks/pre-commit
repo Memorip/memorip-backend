@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# pre-commit hook 스크립트 시작
+# 특정 파일 이름이나 조건을 검사하여 commit을 거부하는 예시 스크립트
+
+# 검사할 파일 이름
+FORBIDDEN_FILE="env.properties"
+
+# 변경된 파일 목록을 가져옴
+changed_files=$(git diff --cached --name-only)
+
+# 변경된 파일 목록에 특정 파일이 포함되어 있는지 확인
+if echo "$changed_files" | grep -q "$FORBIDDEN_FILE"; then
+  echo "Error: $FORBIDDEN_FILE 파일은 커밋 할 수 없어요!"
+  exit 1 # commit 거부
+fi
+
+# pre-commit hook 스크립트 종료
+exit 0 # commit 승인
