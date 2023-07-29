@@ -80,7 +80,7 @@ public class LikeController {
 
     // 좋아요 추가
     @Operation(summary = "좋아요 추가", description = "여행일정에 좋아요를 추가하는 메서드입니다.")
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<DefaultRes<Like>> saveLike(@Valid @RequestBody PlanLikeDTO dto) {
 
         int userId = dto.getUserId();

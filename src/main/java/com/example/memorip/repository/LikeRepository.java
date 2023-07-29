@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 
 @Repository
-public interface LikeRepository extends JpaRepository<Like,Long> {
+public interface LikeRepository extends JpaRepository<Like,Integer> {
     @Override
     ArrayList<Like> findAll();
 
