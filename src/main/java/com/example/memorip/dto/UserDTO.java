@@ -20,4 +20,6 @@ public class UserDTO {
     private LocalDateTime createdAt;
     @JsonProperty("is_active")
     private Boolean isActive;
+    private int myPlanCount;
+    private int myTravelCount;
 }
