@@ -4,6 +4,7 @@ import com.example.memorip.dto.PlanLikeDTO;
 import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.dto.PlanLikeRequest;
 import com.example.memorip.entity.Plan;
+import com.example.memorip.entity.PlanLike;
 import com.example.memorip.entity.User;
 import com.example.memorip.exception.DefaultRes;
 import com.example.memorip.repository.PlanLikeMapper;
@@ -47,13 +48,13 @@ public class PlanLikeController {
     @Operation(summary = "유저별 좋아요 조회", description = "유저별 좋아요수를 조회하는 메서드입니다.")
     @GetMapping("/user/{userId}")
     public ResponseEntity<DefaultRes<List<PlanLikeDTO>>> getLikesByUser(@PathVariable int userId){
-        List<com.example.memorip.entity.PlanLike> lists = likeService.findByuserId(userId);
+        List<PlanLike> lists = likeService.findByuserId(userId);
         ArrayList<PlanLikeDTO> dtoList = new ArrayList<>();
         if (lists.size() == 0) {
             String errorMessage = "좋아요 내역이 없어요.";
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
-        for(com.example.memorip.entity.PlanLike like : lists){
+        for(PlanLike like : lists){
             dtoList.add(likeMapper.likeToLikeDTO(like));
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
@@ -65,13 +66,13 @@ public class PlanLikeController {
     public ResponseEntity<DefaultRes<List<PlanLikeDTO>>> getLikesByPlan(@PathVariable int planId){
 
 
-        List<com.example.memorip.entity.PlanLike> lists = likeService.findByplanId(planId);
+        List<PlanLike> lists = likeService.findByplanId(planId);
         ArrayList<PlanLikeDTO> dtoList = new ArrayList<>();
         if (lists.size() == 0) {
             String errorMessage = "좋아요 내역이 없어요.";
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
-        for(com.example.memorip.entity.PlanLike like : lists){
+        for(PlanLike like : lists){
             dtoList.add(likeMapper.likeToLikeDTO(like));
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
@@ -80,7 +81,7 @@ public class PlanLikeController {
     // 좋아요 추가
     @Operation(summary = "좋아요 추가", description = "여행일정에 좋아요를 추가하는 메서드입니다.")
     @PostMapping("")
-    public ResponseEntity<DefaultRes<com.example.memorip.entity.PlanLike>> saveLike(@Valid @RequestBody PlanLikeRequest dto) {
+    public ResponseEntity<DefaultRes<PlanLike>> saveLike(@Valid @RequestBody PlanLikeRequest dto) {
 
         int userId = dto.getUserId();
 
@@ -99,7 +100,7 @@ public class PlanLikeController {
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
 
-        com.example.memorip.entity.PlanLike like = likeService.findLikeById(userId,planId);
+        PlanLike like = likeService.findLikeById(userId,planId);
 
 
         if(like!=null){
@@ -111,12 +112,12 @@ public class PlanLikeController {
                 String errorMessage = "이미 좋아요를 누른 여행일정이에요.";
                 return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
             }
-            com.example.memorip.entity.PlanLike entity = likeMapper.LikeDTOtoLike(likeDto);
+            PlanLike entity = likeMapper.LikeDTOtoLike(likeDto);
 
             entity.setUser(user);
             entity.setPlan(plan);
 
-            com.example.memorip.entity.PlanLike savedLike = likeService.save(entity);
+            PlanLike savedLike = likeService.save(entity);
 
             // 좋아요 추가
             PlanDTO plandto = planMapper.planToPlanDTO(plan);
@@ -143,12 +144,12 @@ public class PlanLikeController {
             planentity.setUser(user);
             Plan savedPlan = planService.save(planentity);
 
-            com.example.memorip.entity.PlanLike entity = likeMapper.LikeDTOtoLike(newdto);
+            PlanLike entity = likeMapper.LikeDTOtoLike(newdto);
 
             entity.setUser(user);
             entity.setPlan(plan);
 
-            com.example.memorip.entity.PlanLike savedLike = likeService.save(entity);
+            PlanLike savedLike = likeService.save(entity);
             return new ResponseEntity<>(DefaultRes.res(200, "success", savedLike), HttpStatus.OK);
         }
     }
@@ -156,12 +157,12 @@ public class PlanLikeController {
     // 좋아요 취소
     @Operation(summary = "좋아요 취소", description = "여행일정에 좋아요를 취소하는 메서드입니다.")
     @PatchMapping ("/cancel")
-    public ResponseEntity<DefaultRes<com.example.memorip.entity.PlanLike>> cancelLike(@Valid @RequestBody PlanLikeRequest dto) {
+    public ResponseEntity<DefaultRes<PlanLike>> cancelLike(@Valid @RequestBody PlanLikeRequest dto) {
         int userId = dto.getUserId();
         int planId = dto.getPlanId();
 
         User user = userService.getUserById(userId);
-        com.example.memorip.entity.PlanLike like = likeService.findLikeById(userId,planId);
+        PlanLike like = likeService.findLikeById(userId,planId);
         Plan plan = planService.findById(planId);
 
         if(user==null){
@@ -189,12 +190,12 @@ public class PlanLikeController {
                 String errorMessage = "이미 좋아요를 취소한 여행일정이에요.";
                 return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
             }
-            com.example.memorip.entity.PlanLike entity = likeMapper.LikeDTOtoLike(likeDto);
+            PlanLike entity = likeMapper.LikeDTOtoLike(likeDto);
 
             entity.setUser(user);
             entity.setPlan(plan);
 
-            com.example.memorip.entity.PlanLike savedLike = likeService.save(entity);
+            PlanLike savedLike = likeService.save(entity);
 
             // 좋아요 취소
             PlanDTO plandto = planMapper.planToPlanDTO(plan);

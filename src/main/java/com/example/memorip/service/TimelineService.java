@@ -59,8 +59,8 @@ public class TimelineService {
 
     @Transactional(readOnly = true)
     public List<Timeline> findByPlanId(int planId){
-        Optional<Plan> plan = planRepository.findById(planId);
-        if(plan.isEmpty()) throw new CustomException(ErrorCode.PLAN_NOT_FOUND);
+       planRepository.findById(planId).orElseThrow(()
+                ->new CustomException(ErrorCode.PLAN_NOT_FOUND));
 
         return timelineRepository.findAllByPlanId(planId);
     }
