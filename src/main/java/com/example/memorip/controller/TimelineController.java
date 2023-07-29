@@ -82,10 +82,15 @@ public class TimelineController {
     public ResponseEntity<DefaultRes<TimelineDTO>> updateTimeline(@PathVariable int id, @Valid @RequestBody TimelineDTO timelineDTO) {
         TimelineDTO timeline = TimelineMapper.INSTANCE.timelineToTimelineDTO(timelineService.findOneById(id));
 
-        timeline.setDate(timelineDTO.getDate());
-        timeline.setMemo(timelineDTO.getMemo());
-        timeline.setData(timelineDTO.getData());
-
+        if(timelineDTO.getDate()!=null){
+            timeline.setDate(timelineDTO.getDate());
+        }
+        if(timelineDTO.getMemo()!=null) {
+            timeline.setMemo(timelineDTO.getMemo());
+        }
+        if(timelineDTO.getData()!=null) {
+            timeline.setData(timelineDTO.getData());
+        }
         TimelineDTO updatedTimeline = TimelineMapper.INSTANCE.timelineToTimelineDTO(timelineService.save(timeline));
 
         return new ResponseEntity<>(DefaultRes.res(200, "타임라인 수정 성공", updatedTimeline), HttpStatus.OK);

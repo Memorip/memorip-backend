@@ -1,10 +1,13 @@
 package com.example.memorip.controller;
 
+import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.dto.TravelDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.Travel;
 import com.example.memorip.entity.User;
+import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.DefaultRes;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.TravelMapper;
 import com.example.memorip.service.PlanService;
 import com.example.memorip.service.TravelService;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Tag(name = "travle", description = "여행기 관련 api 입니다.")
 @Slf4j
@@ -53,7 +57,7 @@ public class TravelController {
 
     @Operation(summary = "여행기 상세 조회", description = "상세 여행기를 조회하는 메서드입니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getravelById(@PathVariable int id){
+    public ResponseEntity<?> getTravelById(@PathVariable int id){
         Travel travel = travelService.findById(id);
         if(travel==null){
             String errorMessage = "조회되는 여행기가 없어요.";
@@ -62,6 +66,22 @@ public class TravelController {
 
         TravelDTO dto = travelMapper.travelToTravelDTO(travel);
         return new ResponseEntity<>(DefaultRes.res(200, "success", dto), HttpStatus.OK);
+    }
+
+    @Operation(summary = "유저별 여행기 조회", description = "유저별로 작성한 여행기를 조회하는 메서드입니다.")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getTravelByUserId(@PathVariable int userId){
+        User user = userService.getUserById(userId);
+        if(user==null){
+            String errorMessage = "일치하는 사용자가 없어요.";
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+        }
+        ArrayList<Travel> lists = travelService.findByUserId(userId);
+        ArrayList<TravelDTO> dtoList = new ArrayList<>();
+        for(Travel travel : lists){
+            dtoList.add(travelMapper.travelToTravelDTO(travel));
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
 
 

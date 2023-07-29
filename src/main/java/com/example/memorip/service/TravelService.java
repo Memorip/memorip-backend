@@ -1,11 +1,12 @@
 package com.example.memorip.service;
 import com.example.memorip.entity.Travel;
+import com.example.memorip.exception.CustomException;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.TravelRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -23,7 +24,14 @@ public class TravelService {
 
     @Transactional
     public Travel findById(int id){
-        return travelRepository.findById(id);
+        return travelRepository.findById(id).orElseThrow(()
+                ->new CustomException(ErrorCode.TRAVEL_NOT_FOUND));
+    }
+
+
+    @Transactional
+    public ArrayList<Travel> findByUserId(int userId){
+        return travelRepository.findByUserId(userId);
     }
 
     @Transactional
@@ -33,12 +41,9 @@ public class TravelService {
 
     @Transactional
     public Travel deleteById(int id){
-        Optional<Travel> optionalTravel = Optional.ofNullable(travelRepository.findById(id));
-        if (optionalTravel.isEmpty()) {
-            return null;
-        }
-        Travel target = optionalTravel.get();
-        travelRepository.delete(target);
-        return target;
+        Travel travel = travelRepository.findById(id).orElseThrow(()
+                ->new CustomException(ErrorCode.TRAVEL_NOT_FOUND));
+        travelRepository.delete(travel);
+        return travel;
     }
 }

@@ -30,8 +30,8 @@ public class TimelineService {
     @Transactional
     public Timeline save(TimelineDTO timelineDTO){
         int planId = timelineDTO.getPlanId();
-        Plan plan = planRepository.findById(planId);
-        if(plan==null) throw new CustomException(ErrorCode.PLAN_NOT_FOUND);
+        Plan plan = planRepository.findById(planId).orElseThrow(()->
+                 new CustomException(ErrorCode.PLAN_NOT_FOUND));
 
         Timeline timeline = TimelineMapper.INSTANCE.timelineDTOToTimeline(timelineDTO);
         timeline.setPlan(plan);
@@ -45,10 +45,8 @@ public class TimelineService {
         List<Timeline> timelines = new ArrayList<>();
         for (TimelineDTO timelineDTO : timelineDTOList) {
             int planId = timelineDTO.getPlanId();
-            Plan plan = planRepository.findById(planId);
-            if (plan == null) {
-                throw new CustomException(ErrorCode.PLAN_NOT_FOUND);
-            }
+            Plan plan = planRepository.findById(planId).orElseThrow(()->
+                    new CustomException(ErrorCode.PLAN_NOT_FOUND));
 
             Timeline timeline = TimelineMapper.INSTANCE.timelineDTOToTimeline(timelineDTO);
             timeline.setPlan(plan);
@@ -61,24 +59,24 @@ public class TimelineService {
 
     @Transactional(readOnly = true)
     public List<Timeline> findByPlanId(int planId){
-        Plan plan = planRepository.findById(planId);
-        if(plan==null) throw new CustomException(ErrorCode.PLAN_NOT_FOUND);
+       planRepository.findById(planId).orElseThrow(()
+                ->new CustomException(ErrorCode.PLAN_NOT_FOUND));
 
         return timelineRepository.findAllByPlanId(planId);
     }
 
     @Transactional(readOnly = true)
     public Timeline findOneById(int id){
-        return timelineRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.TIMELINE_NOT_FOUND));
+        return timelineRepository.findById(id).orElseThrow(()
+                ->new CustomException(ErrorCode.TIMELINE_NOT_FOUND));
     }
 
     @Transactional
     public void deleteByIds(List<Integer> ids) {
         for (int id : ids) {
-            Optional<Timeline> timeline = timelineRepository.findById(id);
-            if (timeline.isEmpty()) {
-                throw new CustomException(ErrorCode.TIMELINE_NOT_FOUND);
-            }
+            Optional<Timeline> timeline = Optional.ofNullable(timelineRepository.findById(id).orElseThrow(()
+                    -> new CustomException(ErrorCode.TIMELINE_NOT_FOUND)));
+
             timelineRepository.deleteById(id);
         }
     }

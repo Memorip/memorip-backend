@@ -1,46 +1,44 @@
 package com.example.memorip.service;
-import com.example.memorip.entity.Like;
-import com.example.memorip.repository.LikeRepository;
+import com.example.memorip.entity.PlanLike;
+import com.example.memorip.repository.PlanLikeRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Slf4j
 @Service
-public class LikeService {
+public class PlanLikeService {
 
-    private final LikeRepository likeRepository;
+    private final PlanLikeRepository likeRepository;
 
-    public LikeService(LikeRepository likeRepository){
+    public PlanLikeService(PlanLikeRepository likeRepository){
         this.likeRepository=likeRepository;
     }
 
     @Transactional
-    public ArrayList<Like> findAll(){
+    public ArrayList<PlanLike> findAll(){
         return likeRepository.findAll();
     }
 
     @Transactional
-    public Like save(Like entity){
+    public PlanLike save(PlanLike entity){
         return likeRepository.save(entity);
     }
 
     @Transactional
-    public Like findLikeById(int userId, int planId) {
+    public PlanLike findLikeById(int userId, int planId) {
         return likeRepository.findLikeById(userId, planId);
     }
 
     @Transactional
-    public ArrayList<Like> findByuserId(int userId){
+    public ArrayList<PlanLike> findByuserId(int userId){
         return this.likeRepository.findByUserId(userId);
     }
 
     @Transactional
-    public ArrayList<Like> findByplanId(int planId){
+    public ArrayList<PlanLike> findByplanId(int planId){
         return this.likeRepository.findByplanId(planId);
     }
 }

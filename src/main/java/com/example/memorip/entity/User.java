@@ -46,5 +46,10 @@ public class User {
     )
     private Set<Authority> authorities;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Plan> plans;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Travel> travels;
 
 }
