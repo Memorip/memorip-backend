@@ -1,13 +1,10 @@
 package com.example.memorip.controller;
 
-import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.dto.TravelDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.Travel;
 import com.example.memorip.entity.User;
-import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.DefaultRes;
-import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.TravelMapper;
 import com.example.memorip.service.PlanService;
 import com.example.memorip.service.TravelService;

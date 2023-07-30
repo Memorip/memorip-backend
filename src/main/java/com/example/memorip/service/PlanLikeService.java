@@ -33,12 +33,12 @@ public class PlanLikeService {
     }
 
     @Transactional
-    public ArrayList<PlanLike> findByuserId(int userId){
+    public ArrayList<PlanLike> findByUserId(int userId){
         return planLikeRepository.findByUserId(userId);
     }
 
     @Transactional
-    public ArrayList<PlanLike> findByplanId(int planId){
+    public ArrayList<PlanLike> findByPlanId(int planId){
         return planLikeRepository.findByplanId(planId);
     }
 
