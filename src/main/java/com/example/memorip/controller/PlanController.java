@@ -53,12 +53,10 @@ public class PlanController {
     public ResponseEntity<DefaultRes<List<PlanDTO>>> sortPlanByViews(){
         List<Plan> lists = planService.sortByViews();
         ArrayList<PlanDTO> dtoList = new ArrayList<>();
-        if (lists.size() == 0) {
-            String errorMessage = "조회되는 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
-        for(Plan plan : lists){
-            dtoList.add(planMapper.planToPlanDTO(plan));
+        if(lists.size()>0){
+            for(Plan plan : lists){
+                dtoList.add(planMapper.planToPlanDTO(plan));
+            }
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }

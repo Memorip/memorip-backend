@@ -52,6 +52,49 @@ public class TravelController {
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
 
+    @Operation(summary = "여행기 조회순 정렬", description = "여행기를 조회순으로 정렬하여 조회하는 메서드입니다.")
+    @GetMapping("/view/sort")
+    public ResponseEntity<DefaultRes<List<TravelDTO>>> sortPlanByViews(){
+        List<Travel> lists = travelService.travelSortByViews();
+        ArrayList<TravelDTO> dtoList = new ArrayList<>();
+        if(lists.size()>0){
+            for(Travel travel : lists){
+                dtoList.add(travelMapper.travelToTravelDTO(travel));
+            }
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+    }
+
+    @Operation(summary = "여행기 좋아요순 정렬", description = "여행기를 좋아요순으로 정렬하여 조회하는 메서드입니다.")
+    @GetMapping("/like/sort")
+    public ResponseEntity<DefaultRes<List<TravelDTO>>> sortPlanByLikes(){
+        List<Travel> lists = travelService.travelSortByLikes();
+        ArrayList<TravelDTO> dtoList = new ArrayList<>();
+        if(lists.size()>0){
+            for(Travel travel : lists){
+                dtoList.add(travelMapper.travelToTravelDTO(travel));
+            }
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+    }
+
+    @Operation(summary = "여행기 유저별 최신순 정렬", description = "여행기를 유저별로 최신순으로 정렬하여 조회하는 메서드입니다.")
+    @GetMapping("/date/sort/{userId}")
+    public ResponseEntity<DefaultRes<List<TravelDTO>>> sortPlanByDate(@PathVariable int userId){
+        User user = userService.getUserById(userId);
+
+        List<Travel> lists = travelService.travelSortByDate(userId);
+        ArrayList<TravelDTO> dtoList = new ArrayList<>();
+        if(lists.size()>0){
+            for(Travel travel : lists){
+                dtoList.add(travelMapper.travelToTravelDTO(travel));
+            }
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+    }
+
+
+
     @Operation(summary = "여행기 상세 조회", description = "상세 여행기를 조회하는 메서드입니다.")
     @GetMapping("/{id}")
     public ResponseEntity<DefaultRes<TravelDTO>> getTravelById(@PathVariable int id){

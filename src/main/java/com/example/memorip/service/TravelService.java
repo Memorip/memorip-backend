@@ -23,6 +23,21 @@ public class TravelService {
     }
 
     @Transactional
+    public ArrayList<Travel> travelSortByViews(){
+        return travelRepository.sortByViews();
+    }
+
+    @Transactional
+    public ArrayList<Travel> travelSortByLikes(){
+        return travelRepository.sortByLikes();
+    }
+
+    @Transactional
+    public ArrayList<Travel> travelSortByDate(int userId){
+        return travelRepository.sortByDate(userId);
+    }
+
+    @Transactional
     public Travel findById(int id){
         return travelRepository.findById(id).orElseThrow(()
                 ->new CustomException(ErrorCode.TRAVEL_NOT_FOUND));
