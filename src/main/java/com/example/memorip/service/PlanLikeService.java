@@ -11,34 +11,41 @@ import java.util.ArrayList;
 @Service
 public class PlanLikeService {
 
-    private final PlanLikeRepository likeRepository;
+    private final PlanLikeRepository planLikeRepository;
 
-    public PlanLikeService(PlanLikeRepository likeRepository){
-        this.likeRepository=likeRepository;
+    public PlanLikeService(PlanLikeRepository planLikeRepository){
+        this.planLikeRepository=planLikeRepository;
     }
 
     @Transactional
     public ArrayList<PlanLike> findAll(){
-        return likeRepository.findAll();
+        return planLikeRepository.findAll();
     }
 
     @Transactional
     public PlanLike save(PlanLike entity){
-        return likeRepository.save(entity);
+        return planLikeRepository.save(entity);
     }
 
     @Transactional
     public PlanLike findLikeById(int userId, int planId) {
-        return likeRepository.findLikeById(userId, planId);
+        return planLikeRepository.findLikeById(userId, planId);
     }
 
     @Transactional
     public ArrayList<PlanLike> findByuserId(int userId){
-        return this.likeRepository.findByUserId(userId);
+        return planLikeRepository.findByUserId(userId);
     }
 
     @Transactional
     public ArrayList<PlanLike> findByplanId(int planId){
-        return this.likeRepository.findByplanId(planId);
+        return planLikeRepository.findByplanId(planId);
     }
+
+    @Transactional
+    public void deleteByPlanId(int planId){
+        ArrayList<PlanLike> planLikes = planLikeRepository.findByplanId(planId);
+        planLikeRepository.deleteAll(planLikes);
+    }
+
 }

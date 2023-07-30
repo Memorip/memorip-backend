@@ -3,20 +3,21 @@ package com.example.memorip.service;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.ErrorCode;
+import com.example.memorip.repository.PlanLikeRepository;
 import com.example.memorip.repository.PlanRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Slf4j
 @Service
 public class PlanService {
     private final PlanRepository planRepository;
-    public PlanService(PlanRepository planRepository){
+    private final PlanLikeRepository planLikeRepository;
+    public PlanService(PlanRepository planRepository,PlanLikeRepository planLikeRepository){
         this.planRepository=planRepository;
+        this.planLikeRepository=planLikeRepository;
     }
 
     @Transactional
@@ -52,6 +53,7 @@ public class PlanService {
     @Transactional
     public void deleteById(int id) {
         Plan target = planRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.PLAN_NOT_FOUND));
+        planLikeRepository.deleteByPlanId(id);
         planRepository.delete(target);
     }
 

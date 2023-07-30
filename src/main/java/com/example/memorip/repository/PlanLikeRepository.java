@@ -24,5 +24,5 @@ public interface PlanLikeRepository extends JpaRepository<PlanLike,Integer> {
     @Query("SELECT l FROM PlanLike l WHERE l.user.id = :userId AND l.plan.id = :planId")
     PlanLike findLikeById(int userId, int planId);
 
-
+    void deleteByPlanId(int id);
 }
