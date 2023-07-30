@@ -82,13 +82,8 @@ public class PlanController {
     @Operation(summary = "여행일정 상세조회", description = "여행일정 상세를 조회하는 메서드입니다.")
     @GetMapping("/{id}")
     public ResponseEntity<DefaultRes<PlanDTO>> getPlanById(@PathVariable int id){
-        Plan     plan = planService.findById(id);
-        if (plan == null) {
-            String errorMessage = "조회되는 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
+        Plan plan = planService.findById(id);
         PlanDTO dto = planMapper.planToPlanDTO(plan);
-        log.info("dto:"+dto.getUserId());
 
         dto.setViews(dto.getViews()+1);
         Plan entity = planMapper.planDTOtoPlan(dto);

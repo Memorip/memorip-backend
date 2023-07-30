@@ -57,6 +57,21 @@ public class TravelController {
     public ResponseEntity<DefaultRes<TravelDTO>> getTravelById(@PathVariable int id){
         Travel travel = travelService.findById(id);
         TravelDTO dto = travelMapper.travelToTravelDTO(travel);
+
+        dto.setViews(dto.getViews()+1);
+        Travel entity = travelMapper.travelDTOtoTravel(dto);
+
+        int userId = dto.getUserId();
+        int planId = dto.getPlanId();
+
+        User user = userService.getUserById(userId);
+        Plan plan = planService.findById(planId);
+
+        entity.setUser(user);
+        entity.setPlan(plan);
+
+        Travel savedTravel = travelService.save(entity);
+
         return new ResponseEntity<>(DefaultRes.res(200, "success", dto), HttpStatus.OK);
     }
 
