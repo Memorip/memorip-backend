@@ -15,7 +15,9 @@ public interface PlanLikeRepository extends JpaRepository<PlanLike,Integer> {
     @Override
     PlanLike save(PlanLike entity);
 
-    @Query("SELECT l FROM PlanLike l WHERE l.user.id = :userId and l.isLiked = 1")
+    @Query("SELECT l " +
+            "FROM PlanLike l, Plan w " +
+            "WHERE l.plan.id = w.id and w.isPublic = true and l.user.id = :userId and l.isLiked = 1")
     ArrayList<PlanLike> findByUserId(int userId);
 
     @Query("SELECT l FROM PlanLike l WHERE l.plan.id = :planId and l.isLiked = 1")

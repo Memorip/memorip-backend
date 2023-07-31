@@ -15,7 +15,10 @@ public interface TravelLikeRepository extends JpaRepository<TravelLike,Integer> 
     @Override
     TravelLike save(TravelLike entity);
 
-    @Query("SELECT l FROM TravelLike l WHERE l.user.id = :userId and l.isLiked = 1")
+
+    @Query("SELECT l " +
+            "FROM TravelLike l, Travel w " +
+            "WHERE l.travel.id = w.id and w.isPublic = true and l.user.id = :userId and l.isLiked = 1")
     ArrayList<TravelLike> findByUserId(int userId);
 
     @Query("SELECT l FROM TravelLike l WHERE l.travel.id = :travelId and l.isLiked = 1")
