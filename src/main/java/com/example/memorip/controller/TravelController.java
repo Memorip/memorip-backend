@@ -1,13 +1,10 @@
 package com.example.memorip.controller;
 
-import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.dto.TravelDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.Travel;
 import com.example.memorip.entity.User;
-import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.DefaultRes;
-import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.TravelMapper;
 import com.example.memorip.service.PlanService;
 import com.example.memorip.service.TravelService;
@@ -23,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 @Tag(name = "travle", description = "여행기 관련 api 입니다.")
 @Slf4j
@@ -145,18 +141,18 @@ public class TravelController {
 
         Travel savedTravel = travelService.save(travel);
         TravelDTO savedTravelDTO = travelMapper.travelToTravelDTO(savedTravel);
-        return new ResponseEntity<>(DefaultRes.res(200, "success",savedTravelDTO), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(200, "success", savedTravelDTO), HttpStatus.OK);
     }
 
     @Operation(summary = "여행기 삭제", description = "여행기를 삭제하는 메서드입니다.")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteTravelById(@PathVariable int id) {
+    public ResponseEntity<DefaultRes<Void>> deleteTravelById(@PathVariable int id) {
         Travel deletedTravel = travelService.deleteById(id);
         if(deletedTravel==null){
             String errorMessage = "삭제할 여행기가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(204, "success"), HttpStatus.OK);
     }
 
 }
