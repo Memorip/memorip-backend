@@ -64,8 +64,6 @@ public class PlanLikeController {
     @Operation(summary = "여행일정별 좋아요 조회", description = "여행일정별로 좋아요를 조회하는 메서드입니다.")
     @GetMapping("/plan/{planId}")
     public ResponseEntity<DefaultRes<List<PlanLikeDTO>>> getLikesByPlan(@PathVariable int planId){
-
-
         List<PlanLike> lists = likeService.findByplanId(planId);
         ArrayList<PlanLikeDTO> dtoList = new ArrayList<>();
         if (lists.size() == 0) {
@@ -81,10 +79,8 @@ public class PlanLikeController {
     // 좋아요 추가
     @Operation(summary = "좋아요 추가", description = "여행일정에 좋아요를 추가하는 메서드입니다.")
     @PostMapping("")
-    public ResponseEntity<DefaultRes<PlanLike>> saveLike(@Valid @RequestBody PlanLikeRequest dto) {
-
+    public ResponseEntity<DefaultRes<PlanLikeDTO>> saveLike(@Valid @RequestBody PlanLikeRequest dto) {
         int userId = dto.getUserId();
-
 
         int planId = dto.getPlanId();
         User user = userService.getUserById(userId);
@@ -126,8 +122,8 @@ public class PlanLikeController {
             planentity.setUser(user);
             Plan savedPlan = planService.save(planentity);
 
-
-            return new ResponseEntity<>(DefaultRes.res(200, "success", savedLike), HttpStatus.OK);
+            PlanLikeDTO savedLikeDto = likeMapper.likeToLikeDTO(savedLike);
+            return new ResponseEntity<>(DefaultRes.res(200, "success", savedLikeDto), HttpStatus.OK);
         }
         else{
             // 처음 좋아요를 눌렀을때...
@@ -150,14 +146,16 @@ public class PlanLikeController {
             entity.setPlan(plan);
 
             PlanLike savedLike = likeService.save(entity);
-            return new ResponseEntity<>(DefaultRes.res(200, "success", savedLike), HttpStatus.OK);
+
+            PlanLikeDTO savedLikeDto = likeMapper.likeToLikeDTO(savedLike);
+            return new ResponseEntity<>(DefaultRes.res(200, "success", savedLikeDto), HttpStatus.OK);
         }
     }
 
     // 좋아요 취소
     @Operation(summary = "좋아요 취소", description = "여행일정에 좋아요를 취소하는 메서드입니다.")
     @PatchMapping ("/cancel")
-    public ResponseEntity<DefaultRes<PlanLike>> cancelLike(@Valid @RequestBody PlanLikeRequest dto) {
+    public ResponseEntity<DefaultRes<PlanLikeDTO>> cancelLike(@Valid @RequestBody PlanLikeRequest dto) {
         int userId = dto.getUserId();
         int planId = dto.getPlanId();
 
@@ -205,7 +203,8 @@ public class PlanLikeController {
             planentity.setUser(user);
             Plan savedPlan = planService.save(planentity);
 
-            return new ResponseEntity<>(DefaultRes.res(200, "success", savedLike), HttpStatus.OK);
+            PlanLikeDTO savedLikeDto = likeMapper.likeToLikeDTO(savedLike);
+            return new ResponseEntity<>(DefaultRes.res(200, "success", savedLikeDto), HttpStatus.OK);
         }
     }
 

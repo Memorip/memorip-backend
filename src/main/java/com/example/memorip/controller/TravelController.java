@@ -42,7 +42,7 @@ public class TravelController {
 
     @Operation(summary = "여행기 전체 조회", description = "전체 여행기를 조회하는 메서드입니다.")
     @GetMapping("")
-    public ResponseEntity<?> getTravels(){
+    public ResponseEntity<DefaultRes<List<TravelDTO>>> getTravels(){
         ArrayList<Travel> list = travelService.findAllTravels();
         ArrayList<TravelDTO> dtoList = new ArrayList<>();
         for(Travel travel : list){
@@ -53,25 +53,17 @@ public class TravelController {
 
     @Operation(summary = "여행기 상세 조회", description = "상세 여행기를 조회하는 메서드입니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTravelById(@PathVariable int id){
+    public ResponseEntity<DefaultRes<TravelDTO>> getTravelById(@PathVariable int id){
         Travel travel = travelService.findById(id);
-        if(travel==null){
-            String errorMessage = "조회되는 여행기가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
-        }
-
         TravelDTO dto = travelMapper.travelToTravelDTO(travel);
         return new ResponseEntity<>(DefaultRes.res(200, "success", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "유저별 여행기 조회", description = "유저별로 작성한 여행기를 조회하는 메서드입니다.")
     @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getTravelByUserId(@PathVariable int userId){
+    public ResponseEntity<DefaultRes<List<TravelDTO>>> getTravelByUserId(@PathVariable int userId){
         User user = userService.getUserById(userId);
-        if(user==null){
-            String errorMessage = "일치하는 사용자가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
-        }
+
         ArrayList<Travel> lists = travelService.findByUserId(userId);
         ArrayList<TravelDTO> dtoList = new ArrayList<>();
         for(Travel travel : lists){
@@ -83,7 +75,7 @@ public class TravelController {
 
     @Operation(summary = "여행기 등록", description = "여행기를 등록하는 메서드입니다.")
     @PostMapping("/add")
-    public ResponseEntity<?> saveTravel(@Valid @RequestBody TravelDTO dto) {
+    public ResponseEntity<DefaultRes<TravelDTO>> saveTravel(@Valid @RequestBody TravelDTO dto) {
         dto.setViews(0);
         dto.setLikes(0);
         dto.setCreatedAt(LocalDateTime.now());
@@ -91,18 +83,8 @@ public class TravelController {
         int userId = dto.getUserId();
         User user = userService.getUserById(userId);
 
-        if(user==null){
-            String errorMessage = "일치하는 사용자를 찾을 수 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
-        }
-
-
         int planId = dto.getPlanId();
         Plan plan = planService.findByUserIdAndId(userId,planId);
-        if(plan==null){ // 사용자의 여행계획이 아닐 때
-            String errorMessage = "여행기를 작성할 수 있는 여행계획이 아니에요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
-        }
 
         //1. DTO -> 엔티티 변환
         Travel entity = travelMapper.travelDTOtoTravel(dto);
@@ -120,20 +102,13 @@ public class TravelController {
 
     @Operation(summary = "여행기 수정", description = "여행기를 수정하는 메서드입니다.")
     @PatchMapping("/add/{id}")
-    public ResponseEntity<?> updateTravel(@Valid @PathVariable int id, @RequestBody TravelDTO dto){
+    public ResponseEntity<DefaultRes<TravelDTO>> updateTravel(@Valid @PathVariable int id, @RequestBody TravelDTO dto){
         Travel travel = travelService.findById(id);
-        if(travel==null){
-            String errorMessage = "수정할 여행기가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
-        }
 
         int userId = travel.getUser().getId();
         int planId = travel.getPlan().getId();
         Plan plan = planService.findByUserIdAndId(userId,planId);
-        if(plan==null){ // 사용자의 여행계획이 아닐 때
-            String errorMessage = "여행기를 작성할 수 있는 여행계획이 아니에요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, ""), HttpStatus.BAD_REQUEST);
-        }
+
 
         if(dto.getTitle()!=null) travel.setTitle(dto.getTitle());
         if(dto.getContent()!=null) travel.setContent(dto.getContent());
@@ -148,10 +123,6 @@ public class TravelController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<DefaultRes<Void>> deleteTravelById(@PathVariable int id) {
         Travel deletedTravel = travelService.deleteById(id);
-        if(deletedTravel==null){
-            String errorMessage = "삭제할 여행기가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage), HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>(DefaultRes.res(204, "success"), HttpStatus.OK);
     }
 
