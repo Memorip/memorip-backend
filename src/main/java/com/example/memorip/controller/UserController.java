@@ -40,6 +40,15 @@ public class UserController {
                 new ResponseEntity<>(DefaultRes.res(200, "사용 가능한 이메일입니다", false), HttpStatus.OK);
     }
 
+    @Operation(summary = "닉네임 중복검사", description = "이미 사용중인 닉네임이라면 true, 사용가능한 닉네임은 false를 return 합니다.")
+    @GetMapping("/checkNickname")
+    public ResponseEntity<DefaultRes<Boolean>> checkNickname(@RequestParam("nickname") String nickname) {
+        boolean isNicknameTaken = userService.isNicknameTaken(nickname);
+        return isNicknameTaken?
+                new ResponseEntity<>(DefaultRes.res(409, "이미 사용중인 닉네임입니다", true), HttpStatus.CONFLICT) :
+                new ResponseEntity<>(DefaultRes.res(200, "사용 가능한 닉네임입니다", false), HttpStatus.OK);
+    }
+
     @Operation(summary = "회원가입", description = "회원가입을 진행합니다.")
     @PostMapping("/signup")
     public ResponseEntity<DefaultRes<UserDTO>> signup(
