@@ -22,7 +22,7 @@ public class PlanService {
 
     @Transactional
     public ArrayList<Plan> findAll(){
-        return planRepository.findAll();
+        return planRepository.getAllPlan();
     }
 
     @Transactional

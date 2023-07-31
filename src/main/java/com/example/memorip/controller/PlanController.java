@@ -3,7 +3,9 @@ package com.example.memorip.controller;
 import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.User;
+import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.DefaultRes;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.PlanMapper;
 import com.example.memorip.service.PlanService;
 import com.example.memorip.service.UserService;
@@ -81,6 +83,11 @@ public class PlanController {
     @GetMapping("/{id}")
     public ResponseEntity<DefaultRes<PlanDTO>> getPlanById(@PathVariable int id){
         Plan plan = planService.findById(id);
+
+        if(!plan.getIsPublic()){
+            throw new CustomException(ErrorCode.ACCESS_DENIED_PLAN);
+        }
+
         PlanDTO dto = planMapper.planToPlanDTO(plan);
 
         dto.setViews(dto.getViews()+1);
@@ -150,7 +157,8 @@ public class PlanController {
             plan.setParticipants(participants);
         }
         if(dto.getCreatedAt()!=null) plan.setCreatedAt(dto.getCreatedAt());
-        if(dto.getIsPublic()!=null) plan.setIsPublic(true);
+        if(dto.getIsPublic()==false) plan.setIsPublic(false);
+        else plan.setIsPublic(false);
         Plan savedPlan = planService.save(plan);
         PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
         return new ResponseEntity<>(DefaultRes.res(200, "success",savedDto), HttpStatus.OK);
