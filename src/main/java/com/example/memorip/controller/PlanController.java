@@ -135,7 +135,7 @@ public class PlanController {
         entity.setCreatedAt(LocalDateTime.now());
         //2. 엔티티 -> DB 저장
         Plan savedPlan = planService.save(entity);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", savedPlan), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(201, "success", savedPlan), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 수정", description = "여행일정을 수정하는 메서드입니다.")
@@ -165,13 +165,13 @@ public class PlanController {
 
     @Operation(summary = "여행일정 삭제", description = "여행일정을 삭제하는 메서드입니다.")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deletePlanById(@PathVariable int id) {
+    public ResponseEntity<DefaultRes<Void>> deletePlanById(@PathVariable int id) {
         Plan plan = planService.findById(id);
         if(plan == null) {
             String errorMessage = "삭제할 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage), HttpStatus.BAD_REQUEST);
         }
         planService.deleteById(id);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(204, "success"), HttpStatus.OK);
     }
 }

@@ -118,7 +118,7 @@ public class TravelController {
 
         //2. 엔티티 -> DTO 반환
         TravelDTO savedDto = travelMapper.travelToTravelDTO(savedTravel);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", savedDto), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(201, "success", savedDto), HttpStatus.OK);
     }
 
 
