@@ -19,7 +19,7 @@ public class TravelService {
 
     @Transactional
     public ArrayList<Travel> findAllTravels(){
-        return travelRepository.findAll();
+        return travelRepository.getAll();
     }
 
     @Transactional

@@ -135,7 +135,7 @@ public class PlanController {
         entity.setCreatedAt(LocalDateTime.now());
         //2. 엔티티 -> DB 저장
         Plan savedPlan = planService.save(entity);
-        //3. 엔티티 -> DTO 변환 
+        //3. 엔티티 -> DTO 변환
         PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
         return new ResponseEntity<>(DefaultRes.res(200, "success", savedDto), HttpStatus.OK);
     }
@@ -160,8 +160,8 @@ public class PlanController {
             plan.setParticipants(participants);
         }
         if(dto.getCreatedAt()!=null) plan.setCreatedAt(dto.getCreatedAt());
-        if(dto.getIsPublic()==false) plan.setIsPublic(false);
-        else plan.setIsPublic(false);
+        if(dto.getIsPublic()!=null) plan.setIsPublic(dto.getIsPublic());
+
         Plan savedPlan = planService.save(plan);
         PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
         return new ResponseEntity<>(DefaultRes.res(200, "success",savedDto), HttpStatus.OK);

@@ -18,6 +18,7 @@ public enum ErrorCode {
     /* 403 FORBIDDEN : 접근 권한 없음 */
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다"),
     ACCESS_DENIED_PLAN(HttpStatus.FORBIDDEN, "접근할 수 있는 여행계획이 아닙니다."),
+    ACCESS_DENIED_TRAVEL(HttpStatus.FORBIDDEN, "접근할 수 있는 여행기가 아닙니다."),
 
     /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),

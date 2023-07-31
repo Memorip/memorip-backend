@@ -4,7 +4,9 @@ import com.example.memorip.dto.TravelDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.Travel;
 import com.example.memorip.entity.User;
+import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.DefaultRes;
+import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.TravelMapper;
 import com.example.memorip.service.PlanService;
 import com.example.memorip.service.TravelService;
@@ -100,6 +102,10 @@ public class TravelController {
     public ResponseEntity<DefaultRes<TravelDTO>> getTravelById(@PathVariable int id){
         Travel travel = travelService.findById(id);
         TravelDTO dto = travelMapper.travelToTravelDTO(travel);
+
+        if(!travel.getIsPublic()){
+            throw new CustomException(ErrorCode.ACCESS_DENIED_TRAVEL);
+        }
 
         dto.setViews(dto.getViews()+1);
         Travel entity = travelMapper.travelDTOtoTravel(dto);
