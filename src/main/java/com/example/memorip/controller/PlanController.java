@@ -126,13 +126,16 @@ public class PlanController {
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
 
+        List<Integer> participants = dto.getParticipants();
+        userService.getParticipantById(participants);
+
         //1. DTO -> 엔티티 변환
         Plan entity = planMapper.planDTOtoPlan(dto);
         entity.setUser(user);
         entity.setCreatedAt(LocalDateTime.now());
         //2. 엔티티 -> DB 저장
         Plan savedPlan = planService.save(entity);
-        //3. 엔티티 -> DTO 변환
+        //3. 엔티티 -> DTO 변환 
         PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
         return new ResponseEntity<>(DefaultRes.res(200, "success", savedDto), HttpStatus.OK);
     }

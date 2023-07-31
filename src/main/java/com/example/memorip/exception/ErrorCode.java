@@ -21,6 +21,7 @@ public enum ErrorCode {
 
     /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),
+    PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 동행자 정보를 찾을 수 없습니다"),
     PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행계획 정보를 찾을 수 없습니다"),
     TIMELINE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 타임라인 정보를 찾을 수 없습니다"),
     TRAVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행기 정보를 찾을 수 없습니다"),
