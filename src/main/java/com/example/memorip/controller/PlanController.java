@@ -137,7 +137,7 @@ public class PlanController {
         Plan savedPlan = planService.save(entity);
         //3. 엔티티 -> DTO 변환
         PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", savedDto), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(201, "success", savedDto), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 수정", description = "여행일정을 수정하는 메서드입니다.")
@@ -173,9 +173,9 @@ public class PlanController {
         Plan plan = planService.findById(id);
         if(plan == null) {
             String errorMessage = "삭제할 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DefaultRes.res(400, errorMessage), HttpStatus.BAD_REQUEST);
         }
         planService.deleteById(id);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(204, "success"), HttpStatus.OK);
     }
 }

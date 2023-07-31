@@ -51,7 +51,7 @@ public class TravelController {
         for(Travel travel : list){
             dtoList.add(travelMapper.travelToTravelDTO(travel));
         }
-        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(201, "success", dtoList), HttpStatus.OK);
     }
 
     @Operation(summary = "여행기 조회순 정렬", description = "여행기를 조회순으로 정렬하여 조회하는 메서드입니다.")
@@ -181,14 +181,14 @@ public class TravelController {
 
         Travel savedTravel = travelService.save(travel);
         TravelDTO savedTravelDTO = travelMapper.travelToTravelDTO(savedTravel);
-        return new ResponseEntity<>(DefaultRes.res(200, "success",savedTravelDTO), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(200, "success", savedTravelDTO), HttpStatus.OK);
     }
 
     @Operation(summary = "여행기 삭제", description = "여행기를 삭제하는 메서드입니다.")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<DefaultRes<Void>> deleteTravelById(@PathVariable int id) {
         Travel deletedTravel = travelService.deleteById(id);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(204, "success"), HttpStatus.OK);
     }
 
 }
