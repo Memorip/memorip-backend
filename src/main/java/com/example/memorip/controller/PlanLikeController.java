@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Tag(name = "like", description = "여행일정 좋아요 관련 api 입니다.")
+@Tag(name = "planlike", description = "여행일정 좋아요 관련 api 입니다.")
 @Slf4j
 @RestController
 @RequestMapping("/api/plan/likes")
@@ -48,30 +48,27 @@ public class PlanLikeController {
     @Operation(summary = "유저별 좋아요 조회", description = "유저별 좋아요수를 조회하는 메서드입니다.")
     @GetMapping("/user/{userId}")
     public ResponseEntity<DefaultRes<List<PlanLikeDTO>>> getLikesByUser(@PathVariable int userId){
-        List<PlanLike> lists = likeService.findByuserId(userId);
+        List<PlanLike> lists = likeService.findByUserId(userId);
         ArrayList<PlanLikeDTO> dtoList = new ArrayList<>();
-        if (lists.size() == 0) {
-            String errorMessage = "좋아요 내역이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
+        if(lists.size()>0){
+            for(PlanLike like : lists){
+                dtoList.add(likeMapper.likeToLikeDTO(like));
+            }
         }
-        for(PlanLike like : lists){
-            dtoList.add(likeMapper.likeToLikeDTO(like));
-        }
+
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
 
     // 여행일정별 좋아요 조회
     @Operation(summary = "여행일정별 좋아요 조회", description = "여행일정별로 좋아요를 조회하는 메서드입니다.")
-    @GetMapping("/plan/{planId}")
+    @GetMapping("/{planId}")
     public ResponseEntity<DefaultRes<List<PlanLikeDTO>>> getLikesByPlan(@PathVariable int planId){
-        List<PlanLike> lists = likeService.findByplanId(planId);
+        List<PlanLike> lists = likeService.findByPlanId(planId);
         ArrayList<PlanLikeDTO> dtoList = new ArrayList<>();
-        if (lists.size() == 0) {
-            String errorMessage = "좋아요 내역이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
-        for(PlanLike like : lists){
-            dtoList.add(likeMapper.likeToLikeDTO(like));
+        if(lists.size()>0){
+            for(PlanLike like : lists){
+                dtoList.add(likeMapper.likeToLikeDTO(like));
+            }
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
@@ -81,21 +78,10 @@ public class PlanLikeController {
     @PostMapping("")
     public ResponseEntity<DefaultRes<PlanLikeDTO>> saveLike(@Valid @RequestBody PlanLikeRequest dto) {
         int userId = dto.getUserId();
-
         int planId = dto.getPlanId();
+
         User user = userService.getUserById(userId);
-        if(user==null){
-            String errorMessage = "일치하는 사용자가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
-
         Plan plan = planService.findById(planId);
-
-        if (plan==null){
-            String errorMessage = "조회되는 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
-
         PlanLike like = likeService.findLikeById(userId,planId);
 
 
@@ -162,17 +148,6 @@ public class PlanLikeController {
         User user = userService.getUserById(userId);
         PlanLike like = likeService.findLikeById(userId,planId);
         Plan plan = planService.findById(planId);
-
-        if(user==null){
-            String errorMessage = "일치하는 사용자가 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
-
-        if (plan==null){
-            String errorMessage = "조회되는 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
-
 
         if(like==null){ // 좋아요를 추가한 기록이 없을 때
             String errorMessage = "좋아요를 취소할 수 없어요.";

@@ -87,4 +87,12 @@ public class UserService {
     public User getUserById(int id){
         return userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
+
+    @Transactional
+    public boolean getParticipantById(List<Integer> list){
+        for (Integer participant : list) {
+            userRepository.findById(participant).orElseThrow(() -> new CustomException(ErrorCode.PARTICIPANT_NOT_FOUND));
+        }
+        return true;
+    }
 }
