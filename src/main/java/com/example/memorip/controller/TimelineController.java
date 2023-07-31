@@ -40,7 +40,7 @@ public class TimelineController {
     ) {
         List<Timeline> createdTimelines = timelineService.saveAll(timelineDTOList);
         List<TimelineDTO> timelines = TimelineMapper.INSTANCE.timelinesToTimelineDTOs(createdTimelines);
-        return new ResponseEntity<>(DefaultRes.res(200, "타임라인 생성 성공", timelines), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(201, "타임라인 생성 성공", timelines), HttpStatus.OK);
     }
 
     @Operation(summary = "타임라인 목록 조회", description = "한 Plan에 대한 타임라인 목록을 조회합니다.")
@@ -100,7 +100,7 @@ public class TimelineController {
     @DeleteMapping("")
     public ResponseEntity<DefaultRes<Void>> deleteTimelines(@RequestParam("ids") List<Integer> ids) {
         timelineService.deleteByIds(ids);
-        return new ResponseEntity<>(DefaultRes.res(200, "타임라인 삭제 성공"), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(204, "타임라인 삭제 성공"), HttpStatus.OK);
     }
 
 }

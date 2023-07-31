@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public interface PlanRepository extends JpaRepository<Plan,Integer> {
-    @Override
-    ArrayList<Plan> findAll();
+
+    @Query("SELECT l FROM Plan l where l.isPublic = true")
+    ArrayList<Plan> getAllPlan();
 
     @Query("SELECT l FROM Plan l where l.user.id = :userId")
     ArrayList<Plan> findByUserId(int userId);
@@ -17,10 +18,10 @@ public interface PlanRepository extends JpaRepository<Plan,Integer> {
     @Override
     Plan save(Plan entity);
 
-    @Query("SELECT l FROM Plan l order by l.views desc ")
+    @Query("SELECT l FROM Plan l where l.isPublic = true order by l.views desc ")
     ArrayList<Plan> sortByViews();
 
-    @Query("SELECT l FROM Plan l order by l.likes desc ")
+    @Query("SELECT l FROM Plan l where l.isPublic = true  order by l.likes desc ")
     ArrayList<Plan> sortByLikes();
 
     Optional<Plan> findByUserIdAndId(int userId, int planId);

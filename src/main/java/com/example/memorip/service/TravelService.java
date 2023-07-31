@@ -19,7 +19,22 @@ public class TravelService {
 
     @Transactional
     public ArrayList<Travel> findAllTravels(){
-        return travelRepository.findAll();
+        return travelRepository.getAll();
+    }
+
+    @Transactional
+    public ArrayList<Travel> travelSortByViews(){
+        return travelRepository.sortByViews();
+    }
+
+    @Transactional
+    public ArrayList<Travel> travelSortByLikes(){
+        return travelRepository.sortByLikes();
+    }
+
+    @Transactional
+    public ArrayList<Travel> travelSortByDate(int userId){
+        return travelRepository.sortByDate(userId);
     }
 
     @Transactional

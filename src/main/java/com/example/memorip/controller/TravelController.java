@@ -1,6 +1,5 @@
 package com.example.memorip.controller;
 
-import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.dto.TravelDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.Travel;
@@ -52,14 +51,76 @@ public class TravelController {
         for(Travel travel : list){
             dtoList.add(travelMapper.travelToTravelDTO(travel));
         }
+        return new ResponseEntity<>(DefaultRes.res(201, "success", dtoList), HttpStatus.OK);
+    }
+
+    @Operation(summary = "여행기 조회순 정렬", description = "여행기를 조회순으로 정렬하여 조회하는 메서드입니다.")
+    @GetMapping("/view/sort")
+    public ResponseEntity<DefaultRes<List<TravelDTO>>> sortPlanByViews(){
+        List<Travel> lists = travelService.travelSortByViews();
+        ArrayList<TravelDTO> dtoList = new ArrayList<>();
+        if(lists.size()>0){
+            for(Travel travel : lists){
+                dtoList.add(travelMapper.travelToTravelDTO(travel));
+            }
+        }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
+
+    @Operation(summary = "여행기 좋아요순 정렬", description = "여행기를 좋아요순으로 정렬하여 조회하는 메서드입니다.")
+    @GetMapping("/like/sort")
+    public ResponseEntity<DefaultRes<List<TravelDTO>>> sortPlanByLikes(){
+        List<Travel> lists = travelService.travelSortByLikes();
+        ArrayList<TravelDTO> dtoList = new ArrayList<>();
+        if(lists.size()>0){
+            for(Travel travel : lists){
+                dtoList.add(travelMapper.travelToTravelDTO(travel));
+            }
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+    }
+
+    @Operation(summary = "여행기 유저별 최신순 정렬", description = "여행기를 유저별로 최신순으로 정렬하여 조회하는 메서드입니다.")
+    @GetMapping("/date/sort/{userId}")
+    public ResponseEntity<DefaultRes<List<TravelDTO>>> sortPlanByDate(@PathVariable int userId){
+        User user = userService.getUserById(userId);
+
+        List<Travel> lists = travelService.travelSortByDate(userId);
+        ArrayList<TravelDTO> dtoList = new ArrayList<>();
+        if(lists.size()>0){
+            for(Travel travel : lists){
+                dtoList.add(travelMapper.travelToTravelDTO(travel));
+            }
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
+    }
+
+
 
     @Operation(summary = "여행기 상세 조회", description = "상세 여행기를 조회하는 메서드입니다.")
     @GetMapping("/{id}")
     public ResponseEntity<DefaultRes<TravelDTO>> getTravelById(@PathVariable int id){
         Travel travel = travelService.findById(id);
         TravelDTO dto = travelMapper.travelToTravelDTO(travel);
+
+        if(!travel.getIsPublic()){
+            throw new CustomException(ErrorCode.ACCESS_DENIED_TRAVEL);
+        }
+
+        dto.setViews(dto.getViews()+1);
+        Travel entity = travelMapper.travelDTOtoTravel(dto);
+
+        int userId = dto.getUserId();
+        int planId = dto.getPlanId();
+
+        User user = userService.getUserById(userId);
+        Plan plan = planService.findById(planId);
+
+        entity.setUser(user);
+        entity.setPlan(plan);
+
+        Travel savedTravel = travelService.save(entity);
+
         return new ResponseEntity<>(DefaultRes.res(200, "success", dto), HttpStatus.OK);
     }
 
@@ -120,14 +181,14 @@ public class TravelController {
 
         Travel savedTravel = travelService.save(travel);
         TravelDTO savedTravelDTO = travelMapper.travelToTravelDTO(savedTravel);
-        return new ResponseEntity<>(DefaultRes.res(200, "success",savedTravelDTO), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(200, "success", savedTravelDTO), HttpStatus.OK);
     }
 
     @Operation(summary = "여행기 삭제", description = "여행기를 삭제하는 메서드입니다.")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<DefaultRes<Void>> deleteTravelById(@PathVariable int id) {
         Travel deletedTravel = travelService.deleteById(id);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", null), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(204, "success"), HttpStatus.OK);
     }
 
 }
