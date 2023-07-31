@@ -33,9 +33,18 @@ public class UserService {
         return userRepository.findOneWithAuthoritiesByEmail(email).orElse(null) != null;
     }
 
+    @Transactional(readOnly = true)
+    public boolean isNicknameTaken(String nickname) {
+        return userRepository.findOneByNickname(nickname).orElse(null) != null;
+    }
+
     @Transactional
     public User signup(SignUpDTO signUpDTO){
-        if(userRepository.findOneWithAuthoritiesByEmail(signUpDTO.getEmail()).orElse(null) != null){
+        if(isEmailTaken(signUpDTO.getEmail())){
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
+        }
+
+        if(isNicknameTaken(signUpDTO.getEmail())){
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
