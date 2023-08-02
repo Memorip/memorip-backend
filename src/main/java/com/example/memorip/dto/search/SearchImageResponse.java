@@ -1,4 +1,4 @@
-package com.example.memorip.dto;
+package com.example.memorip.dto.search;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

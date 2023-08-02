@@ -1,14 +1,14 @@
 package com.example.memorip.controller;
 
-import com.example.memorip.dto.SignUpDTO;
-import com.example.memorip.dto.UserDTO;
+import com.example.memorip.dto.user.UpdatePasswordDTO;
+import com.example.memorip.dto.user.UpdateUserDTO;
+import com.example.memorip.dto.user.UserDTO;
 import com.example.memorip.exception.DefaultRes;
 import com.example.memorip.repository.UserMapper;
 import com.example.memorip.service.UserService;
 import com.example.memorip.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,39 +31,37 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "이메일 중복검사", description = "이미 사용중인 이메일이라면 true, 사용가능한 이메일은 false를 return 합니다.")
-    @GetMapping("/checkEmail")
-    public ResponseEntity<DefaultRes<Boolean>> checkEmail(@RequestParam("email") String email) {
-        boolean isEmailTaken = userService.isEmailTaken(email);
-        return isEmailTaken?
-                new ResponseEntity<>(DefaultRes.res(409, "이미 가입된 이메일입니다", true), HttpStatus.CONFLICT) :
-                new ResponseEntity<>(DefaultRes.res(200, "사용 가능한 이메일입니다", false), HttpStatus.OK);
-    }
-
-    @Operation(summary = "닉네임 중복검사", description = "이미 사용중인 닉네임이라면 true, 사용가능한 닉네임은 false를 return 합니다.")
-    @GetMapping("/checkNickname")
-    public ResponseEntity<DefaultRes<Boolean>> checkNickname(@RequestParam("nickname") String nickname) {
-        boolean isNicknameTaken = userService.isNicknameTaken(nickname);
-        return isNicknameTaken?
-                new ResponseEntity<>(DefaultRes.res(409, "이미 사용중인 닉네임입니다", true), HttpStatus.CONFLICT) :
-                new ResponseEntity<>(DefaultRes.res(200, "사용 가능한 닉네임입니다", false), HttpStatus.OK);
-    }
-
-    @Operation(summary = "회원가입", description = "회원가입을 진행합니다.")
-    @PostMapping("/signup")
-    public ResponseEntity<DefaultRes<UserDTO>> signup(
-            @Valid @RequestBody SignUpDTO signUpDTO
-    ) {
-        UserDTO user = UserMapper.INSTANCE.userToUserDTO(userService.signup(signUpDTO));
-        return new ResponseEntity<>(DefaultRes.res(201, "회원가입 성공", user), HttpStatus.CREATED);
-    }
-
     @Operation(summary = "본인데이터 조회", description = "현재 SecurityContext에 저장된 username 유저 정보를 가져옵니다.")
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<DefaultRes<UserDTO>> getMyUserInfo() {
         UserDTO user = UserMapper.INSTANCE.userToUserDTO(userService.getMyUserWithAuthorities());
         return new ResponseEntity<>(DefaultRes.res(200, "본인 정보 조회 성공", user), HttpStatus.OK);
+    }
+
+    @Operation(summary = "유저정보 수정", description = "현재 SecurityContext에 저장된 username 기반으로 닉네임과 프로필 사진을 수정합니다.")
+    @PostMapping("/user")
+    @PreAuthorize("hasAnyRole('USER')")
+    public ResponseEntity<DefaultRes<UserDTO>> updateUserInfo(@RequestBody UpdateUserDTO updateUserDTO) {
+        UserDTO updatedUser = UserMapper.INSTANCE.userToUserDTO(userService.updateUserInfo(updateUserDTO));
+        return new ResponseEntity<>(DefaultRes.res(201, "유저 정보 수정 성공", updatedUser), HttpStatus.OK);
+    }
+
+    @Operation(summary = "비밀번호 변경", description = "현재 SecurityContext에 저장된 username 기반으로 비밀번호를 수정합니다.")
+    @PostMapping("/user/password")
+    @PreAuthorize("hasAnyRole('USER')")
+    public ResponseEntity<DefaultRes<UserDTO>> updatePassword(@RequestBody UpdatePasswordDTO changePasswordDTO) {
+        UserDTO user = UserMapper.INSTANCE.userToUserDTO(userService.updatePassword(changePasswordDTO));
+        return new ResponseEntity<>(DefaultRes.res(201, "비밀번호 수정 성공", user), HttpStatus.OK);
+    }
+
+    @Operation(summary = "탈퇴", description = "현재 SecurityContext에 저장된 username 기반으로 유저를 삭제합니다.")
+    @DeleteMapping ("/user")
+    @PreAuthorize("hasAnyRole('USER')")
+    public ResponseEntity<DefaultRes<UserDTO>> deleteUser() {
+        String email = SecurityUtil.getCurrentUsername().orElse(null);
+        UserDTO deleteUser = UserMapper.INSTANCE.userToUserDTO(userService.deactivateUser(email));
+        return new ResponseEntity<>(DefaultRes.res(200, "탈퇴 성공", deleteUser), HttpStatus.OK);
     }
 
     @Operation(summary = "[admin]유저데이터 조회", description = "username(email)을 기준으로 유저 정보를 가져옵니다. ADMIN 권한이 필요합니다.")
@@ -80,17 +78,6 @@ public class UserController {
     public ResponseEntity<DefaultRes<List<UserDTO>>> getUsers() {
         List<UserDTO> users = UserMapper.INSTANCE.usersToUserDTOs(userService.getUsers());
         return new ResponseEntity<>(DefaultRes.res(200, "유저 목록 조회 성공", users), HttpStatus.OK);
-    }
-
-    // TODO: 로그아웃
-
-    @Operation(summary = "탈퇴", description = "현재 SecurityContext에 저장된 username 기반으로 유저를 삭제합니다.")
-    @DeleteMapping ("/user")
-    @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<DefaultRes<UserDTO>> deleteUser() {
-        String email = SecurityUtil.getCurrentUsername().orElse(null);
-        UserDTO deleteUser = UserMapper.INSTANCE.userToUserDTO(userService.deactivateUser(email));
-        return new ResponseEntity<>(DefaultRes.res(200, "탈퇴 성공", deleteUser), HttpStatus.OK);
     }
 
     @Operation(summary = "[admin]탈퇴", description = "username(email)로 유저를 삭제합니다. ADMIN 권한이 필요합니다.")

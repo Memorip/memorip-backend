@@ -1,4 +1,4 @@
-package com.example.memorip.dto;
+package com.example.memorip.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

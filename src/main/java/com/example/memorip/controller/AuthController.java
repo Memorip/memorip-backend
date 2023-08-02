@@ -1,11 +1,15 @@
 package com.example.memorip.controller;
 
-import com.example.memorip.dto.JwtResponseDTO;
-import com.example.memorip.dto.LoginRequestDTO;
+import com.example.memorip.dto.user.JwtResponseDTO;
+import com.example.memorip.dto.user.LoginRequestDTO;
+import com.example.memorip.dto.user.SignUpDTO;
+import com.example.memorip.dto.user.UserDTO;
 import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.DefaultRes;
 import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.jwt.JwtTokenProvider;
+import com.example.memorip.repository.UserMapper;
+import com.example.memorip.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,15 +27,12 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
 
-@Tag(name = "auth", description = "auth api 입니다.")
+@Tag(name = "auth", description = "인증 관련 api 입니다.")
 @Slf4j
 @RestController
 @RequestMapping("/api")
@@ -39,15 +40,45 @@ import jakarta.validation.Valid;
 public class AuthController {
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final UserService userService;
 
     @Value("${jwt.expiration}")
     private int expiration;
 
 
-    public AuthController(JwtTokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthController(JwtTokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.userService = userService;
     }
+
+    @Operation(summary = "이메일 중복검사", description = "이미 사용중인 이메일이라면 true, 사용가능한 이메일은 false를 return 합니다.")
+    @GetMapping("/checkEmail")
+    public ResponseEntity<DefaultRes<Boolean>> checkEmail(@RequestParam("email") String email) {
+        boolean isEmailTaken = userService.isEmailTaken(email);
+        return isEmailTaken?
+                new ResponseEntity<>(DefaultRes.res(409, "이미 가입된 이메일입니다", true), HttpStatus.CONFLICT) :
+                new ResponseEntity<>(DefaultRes.res(200, "사용 가능한 이메일입니다", false), HttpStatus.OK);
+    }
+
+    @Operation(summary = "닉네임 중복검사", description = "이미 사용중인 닉네임이라면 true, 사용가능한 닉네임은 false를 return 합니다.")
+    @GetMapping("/checkNickname")
+    public ResponseEntity<DefaultRes<Boolean>> checkNickname(@RequestParam("nickname") String nickname) {
+        boolean isNicknameTaken = userService.isNicknameTaken(nickname);
+        return isNicknameTaken?
+                new ResponseEntity<>(DefaultRes.res(409, "이미 사용중인 닉네임입니다", true), HttpStatus.CONFLICT) :
+                new ResponseEntity<>(DefaultRes.res(200, "사용 가능한 닉네임입니다", false), HttpStatus.OK);
+    }
+
+    @Operation(summary = "회원가입", description = "회원가입을 진행합니다.")
+    @PostMapping("/signup")
+    public ResponseEntity<DefaultRes<UserDTO>> signup(
+            @Valid @RequestBody SignUpDTO signUpDTO
+    ) {
+        UserDTO user = UserMapper.INSTANCE.userToUserDTO(userService.signup(signUpDTO));
+        return new ResponseEntity<>(DefaultRes.res(201, "회원가입 성공", user), HttpStatus.CREATED);
+    }
+
 
     @Operation(summary = "로그인", description = "요청 성공 시, 토큰을 발급하여 쿠키에 담아 전송합니다.")
     @PostMapping("/login")

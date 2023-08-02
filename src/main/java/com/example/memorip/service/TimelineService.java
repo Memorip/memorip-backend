@@ -27,17 +27,19 @@ public class TimelineService {
         this.planRepository=planRepository;
     }
 
-    @Transactional
-    public Timeline save(TimelineDTO timelineDTO){
-        int planId = timelineDTO.getPlanId();
-        Plan plan = planRepository.findById(planId).orElseThrow(()->
-                 new CustomException(ErrorCode.PLAN_NOT_FOUND));
 
-        Timeline timeline = TimelineMapper.INSTANCE.timelineDTOToTimeline(timelineDTO);
-        timeline.setPlan(plan);
-        timeline.setCreatedAt(LocalDateTime.now());
+    @Transactional(readOnly = true)
+    public List<Timeline> findByPlanId(int planId){
+        planRepository.findById(planId).orElseThrow(()
+                ->new CustomException(ErrorCode.PLAN_NOT_FOUND));
 
-        return timelineRepository.save(timeline);
+        return timelineRepository.findAllByPlanId(planId);
+    }
+
+    @Transactional(readOnly = true)
+    public Timeline findById(int id){
+        return timelineRepository.findById(id).orElseThrow(()
+                ->new CustomException(ErrorCode.TIMELINE_NOT_FOUND));
     }
 
     @Transactional
@@ -57,18 +59,29 @@ public class TimelineService {
         return timelineRepository.saveAll(timelines);
     }
 
-    @Transactional(readOnly = true)
-    public List<Timeline> findByPlanId(int planId){
-       planRepository.findById(planId).orElseThrow(()
-                ->new CustomException(ErrorCode.PLAN_NOT_FOUND));
+    @Transactional
+    public Timeline updateById(int id, TimelineDTO timelineDTO) {
+        Optional<Timeline> optionalTimeline = timelineRepository.findById(id);
 
-        return timelineRepository.findAllByPlanId(planId);
-    }
+        if (optionalTimeline.isPresent()) {
+            Timeline timeline = optionalTimeline.get();
 
-    @Transactional(readOnly = true)
-    public Timeline findOneById(int id){
-        return timelineRepository.findById(id).orElseThrow(()
-                ->new CustomException(ErrorCode.TIMELINE_NOT_FOUND));
+            if (timelineDTO.getDate() != null) {
+                timeline.setDate(timelineDTO.getDate());
+            }
+
+            if (timelineDTO.getMemo() != null) {
+                timeline.setMemo(timelineDTO.getMemo());
+            }
+
+            if (timelineDTO.getData() != null) {
+                timeline.setData(timelineDTO.getData());
+            }
+
+            return timelineRepository.save(timeline);
+        } else {
+            throw new CustomException(ErrorCode.TIMELINE_NOT_FOUND);
+        }
     }
 
     @Transactional

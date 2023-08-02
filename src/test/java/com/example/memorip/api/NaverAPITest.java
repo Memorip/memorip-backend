@@ -1,7 +1,7 @@
 package com.example.memorip.api;
 
-import com.example.memorip.dto.SearchImageRequest;
-import com.example.memorip.dto.SearchLocalRequest;
+import com.example.memorip.dto.search.SearchImageRequest;
+import com.example.memorip.dto.search.SearchLocalRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
