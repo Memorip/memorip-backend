@@ -1,6 +1,6 @@
 package com.example.memorip.repository;
 
-import com.example.memorip.dto.UserDTO;
+import com.example.memorip.dto.user.UserDTO;
 import com.example.memorip.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,6 +1,8 @@
 package com.example.memorip.service;
 
-import com.example.memorip.dto.SignUpDTO;
+import com.example.memorip.dto.user.SignUpDTO;
+import com.example.memorip.dto.user.UpdatePasswordDTO;
+import com.example.memorip.dto.user.UpdateUserDTO;
 import com.example.memorip.entity.Authority;
 import com.example.memorip.entity.User;
 import com.example.memorip.exception.CustomException;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -26,6 +29,23 @@ public class UserService {
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Transactional(readOnly = true)
+    public User getUserWithAuthorities(String email) {
+        return userRepository.findOneWithAuthoritiesByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public User getMyUserWithAuthorities() {
+        return SecurityUtil.getCurrentUsername()
+                .flatMap(userRepository::findOneWithAuthoritiesByEmail)
+                .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED_USER));
+    }
+
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -41,11 +61,11 @@ public class UserService {
     @Transactional
     public User signup(SignUpDTO signUpDTO){
         if(isEmailTaken(signUpDTO.getEmail())){
-            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 사용중인 이메일입니다.");
         }
 
-        if(isNicknameTaken(signUpDTO.getEmail())){
-            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
+        if(isNicknameTaken(signUpDTO.getNickname())){
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 사용중인 닉네임입니다.");
         }
 
         Authority authority = Authority.builder()
@@ -64,21 +84,43 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Transactional(readOnly = true)
-    public User getUserWithAuthorities(String email) {
-        return userRepository.findOneWithAuthoritiesByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    @Transactional
+    public User updateUserInfo(UpdateUserDTO updateUserDTO){
+        User user = getUserWithAuthorities(SecurityUtil.getCurrentUsername().get());
+
+        log.info("updateUserDTO: {}", updateUserDTO);
+        if(updateUserDTO.getNickname()!=null){
+            if(isNicknameTaken(updateUserDTO.getNickname())){
+                throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 사용중인 닉네임입니다.");
+            }
+            user.setNickname(updateUserDTO.getNickname());
+        }
+        if(updateUserDTO.getProfile()!=null) {
+            user.setProfile(updateUserDTO.getProfile());
+        }
+
+        return userRepository.save(user);
     }
 
-    @Transactional(readOnly = true)
-    public User getMyUserWithAuthorities() {
-        return SecurityUtil.getCurrentUsername()
-                        .flatMap(userRepository::findOneWithAuthoritiesByEmail)
-                        .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED_USER));
-    }
+    @Transactional
+    public User updatePassword(UpdatePasswordDTO updatePasswordDTO){
+        User user = getUserWithAuthorities(SecurityUtil.getCurrentUsername().get());
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+        if(!passwordEncoder.matches(updatePasswordDTO.getCurrentPassword(), user.getPassword())){
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER_PASSWORD);
+        }
+
+        if(!Objects.equals(updatePasswordDTO.getNewPassword(), updatePasswordDTO.getNewPasswordConfirm())){
+            throw new CustomException(ErrorCode.PASSWORD_CONFIRM_NOT_MATCHED);
+        }
+
+        if(passwordEncoder.matches(updatePasswordDTO.getNewPassword(), user.getPassword())){
+            throw new CustomException(ErrorCode.PASSWORD_CONFIRM_NOT_MATCHED, "기존 비밀번호와 동일합니다.");
+        }
+
+        user.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
+
+        return userRepository.save(user);
     }
 
     @Transactional
