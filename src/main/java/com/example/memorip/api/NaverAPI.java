@@ -1,9 +1,9 @@
 package com.example.memorip.api;
 
-import com.example.memorip.dto.SearchImageRequest;
-import com.example.memorip.dto.SearchImageResponse;
-import com.example.memorip.dto.SearchLocalRequest;
-import com.example.memorip.dto.SearchLocalResponse;
+import com.example.memorip.dto.search.SearchImageRequest;
+import com.example.memorip.dto.search.SearchImageResponse;
+import com.example.memorip.dto.search.SearchLocalRequest;
+import com.example.memorip.dto.search.SearchLocalResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;

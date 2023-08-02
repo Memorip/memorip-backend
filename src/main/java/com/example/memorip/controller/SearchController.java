@@ -1,6 +1,6 @@
 package com.example.memorip.controller;
 
-import com.example.memorip.dto.SearchLocalDTO;
+import com.example.memorip.dto.search.SearchLocalDTO;
 import com.example.memorip.exception.DefaultRes;
 import com.example.memorip.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
