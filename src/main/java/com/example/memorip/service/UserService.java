@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.memorip.util.SecurityUtil;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -86,9 +83,8 @@ public class UserService {
 
     @Transactional
     public User updateUserInfo(UpdateUserDTO updateUserDTO){
-        User user = getUserWithAuthorities(SecurityUtil.getCurrentUsername().get());
+        User user = getUserWithAuthorities(SecurityUtil.getCurrentUsername().orElse(null));
 
-        log.info("updateUserDTO: {}", updateUserDTO);
         if(updateUserDTO.getNickname()!=null){
             if(isNicknameTaken(updateUserDTO.getNickname())){
                 throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 사용중인 닉네임입니다.");
@@ -104,7 +100,7 @@ public class UserService {
 
     @Transactional
     public User updatePassword(UpdatePasswordDTO updatePasswordDTO){
-        User user = getUserWithAuthorities(SecurityUtil.getCurrentUsername().get());
+        User user = getUserWithAuthorities(SecurityUtil.getCurrentUsername().orElse(null));
 
         if(!passwordEncoder.matches(updatePasswordDTO.getCurrentPassword(), user.getPassword())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_USER_PASSWORD);
