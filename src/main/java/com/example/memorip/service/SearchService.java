@@ -1,7 +1,7 @@
 package com.example.memorip.service;
 
 import com.example.memorip.api.NaverAPI;
-import com.example.memorip.dto.*;
+import com.example.memorip.dto.search.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

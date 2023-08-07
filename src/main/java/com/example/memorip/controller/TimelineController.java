@@ -33,15 +33,6 @@ public class TimelineController {
         this.timelineService = timelineService;
     }
 
-    @Operation(summary = "타임라인 생성", description = "타임라인을 생성합니다.")
-    @PostMapping("")
-    public ResponseEntity<DefaultRes<List<TimelineDTO>>> saveTimeline(
-            @Valid @RequestBody List<TimelineDTO> timelineDTOList
-    ) {
-        List<Timeline> createdTimelines = timelineService.saveAll(timelineDTOList);
-        List<TimelineDTO> timelines = TimelineMapper.INSTANCE.timelinesToTimelineDTOs(createdTimelines);
-        return new ResponseEntity<>(DefaultRes.res(201, "타임라인 생성 성공", timelines), HttpStatus.OK);
-    }
 
     @Operation(summary = "타임라인 목록 조회", description = "한 Plan에 대한 타임라인 목록을 조회합니다.")
     @GetMapping("")
@@ -72,29 +63,30 @@ public class TimelineController {
     @Operation(summary = "타임라인 조회", description = "타임라인을 한 개의 데이터를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<DefaultRes<TimelineDTO>> getTimeline(@PathVariable int id) {
-        Timeline timeline = timelineService.findOneById(id);
+        Timeline timeline = timelineService.findById(id);
         TimelineDTO timelineDTO = TimelineMapper.INSTANCE.timelineToTimelineDTO(timeline);
         return new ResponseEntity<>(DefaultRes.res(200, "타임라인 조회 성공", timelineDTO), HttpStatus.OK);
+    }
+
+    @Operation(summary = "타임라인 생성", description = "타임라인을 생성합니다.")
+    @PostMapping("")
+    public ResponseEntity<DefaultRes<List<TimelineDTO>>> saveTimeline(
+            @Valid @RequestBody List<TimelineDTO> timelineDTOList
+    ) {
+        List<Timeline> createdTimelines = timelineService.saveAll(timelineDTOList);
+        List<TimelineDTO> timelines = TimelineMapper.INSTANCE.timelinesToTimelineDTOs(createdTimelines);
+        return new ResponseEntity<>(DefaultRes.res(201, "타임라인 생성 성공", timelines), HttpStatus.OK);
     }
 
     @Operation(summary = "타임라인 수정", description = "타임라인을 수정합니다.")
     @PatchMapping("/{id}")
     public ResponseEntity<DefaultRes<TimelineDTO>> updateTimeline(@PathVariable int id, @Valid @RequestBody TimelineDTO timelineDTO) {
-        TimelineDTO timeline = TimelineMapper.INSTANCE.timelineToTimelineDTO(timelineService.findOneById(id));
+        Timeline updatedTimeline = timelineService.updateById(id, timelineDTO);
+        TimelineDTO updatedTimelineDTO = TimelineMapper.INSTANCE.timelineToTimelineDTO(updatedTimeline);
 
-        if(timelineDTO.getDate()!=null){
-            timeline.setDate(timelineDTO.getDate());
-        }
-        if(timelineDTO.getMemo()!=null) {
-            timeline.setMemo(timelineDTO.getMemo());
-        }
-        if(timelineDTO.getData()!=null) {
-            timeline.setData(timelineDTO.getData());
-        }
-        TimelineDTO updatedTimeline = TimelineMapper.INSTANCE.timelineToTimelineDTO(timelineService.save(timeline));
-
-        return new ResponseEntity<>(DefaultRes.res(200, "타임라인 수정 성공", updatedTimeline), HttpStatus.OK);
+        return new ResponseEntity<>(DefaultRes.res(200, "타임라인 수정 성공", updatedTimelineDTO), HttpStatus.OK);
     }
+
 
     @Operation(summary = "타임라인 삭제", description = "타임라인을 삭제합니다.")
     @DeleteMapping("")
