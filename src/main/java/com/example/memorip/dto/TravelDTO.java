@@ -12,6 +12,7 @@ public class TravelDTO {
     private int planId;
     private int userId;
     private String title;
+    private String nickname;
     private String content;
     private int views;
     private int likes;

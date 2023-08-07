@@ -14,6 +14,7 @@ import java.util.*;
 public class PlanDTO {
     private int id;
     private int userId;
+    private String nickname;
     private List<String> city;
     private Date startDate;
     private Date endDate;

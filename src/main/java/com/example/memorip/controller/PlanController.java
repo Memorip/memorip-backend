@@ -120,6 +120,7 @@ public class PlanController {
 
         int userId = dto.getUserId();
         User user = userService.getUserById(userId);
+        String nickname = user.getNickname();
 
         if(user==null){
             String errorMessage = "일치하는 사용자를 찾을 수 없어요.";
@@ -131,6 +132,7 @@ public class PlanController {
 
         //1. DTO -> 엔티티 변환
         Plan entity = planMapper.planDTOtoPlan(dto);
+        entity.setNickname(nickname);
         entity.setUser(user);
         entity.setCreatedAt(LocalDateTime.now());
         //2. 엔티티 -> DB 저장
