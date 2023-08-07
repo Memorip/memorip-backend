@@ -19,12 +19,15 @@ public class InvitationService {
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int LENGTH = 8;
 
+
     private final InvitationRepository invitationRepository;
     private final PlanRepository planRepository;
+    private final Random random;
 
     public InvitationService(InvitationRepository invitationRepository, PlanRepository planRepository){
         this.invitationRepository = invitationRepository;
         this.planRepository = planRepository;
+        this.random = new Random();
     }
 
     @Transactional(readOnly = true)
@@ -59,11 +62,10 @@ public class InvitationService {
         return invitationRepository.save(newInvitation);
     }
 
-    public static String generateRandomString(){
-        Random random = new Random();
+    public String generateRandomString(){
         StringBuilder sb = new StringBuilder(LENGTH);
 
-        for(int i=0;i<LENGTH;i++){
+        for(int i=0; i<LENGTH; i++){
             int randomIndex = random.nextInt(CHARACTERS.length());
             char randomChar = CHARACTERS.charAt(randomIndex);
             sb.append(randomChar);
