@@ -122,11 +122,6 @@ public class PlanController {
         User user = userService.getUserById(userId);
         String nickname = user.getNickname();
 
-        if(user==null){
-            String errorMessage = "일치하는 사용자를 찾을 수 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
-
         List<Integer> participants = dto.getParticipants();
         userService.getParticipantById(participants);
 
@@ -146,10 +141,6 @@ public class PlanController {
     @PatchMapping("/add/{id}")
     public ResponseEntity<DefaultRes<PlanDTO>> updatePlan(@Valid @PathVariable int id, @RequestBody PlanDTO dto){
         Plan plan = planService.findById(id);
-        if(plan==null){
-            String errorMessage = "수정할 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
-        }
         if(dto.getCity()!=null) {
             String cities = planMapper.cityListToString(dto.getCity());
             plan.setCity(cities);
@@ -173,10 +164,6 @@ public class PlanController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<DefaultRes<Void>> deletePlanById(@PathVariable int id) {
         Plan plan = planService.findById(id);
-        if(plan == null) {
-            String errorMessage = "삭제할 여행 계획이 없어요.";
-            return new ResponseEntity<>(DefaultRes.res(400, errorMessage), HttpStatus.BAD_REQUEST);
-        }
         planService.deleteById(id);
         return new ResponseEntity<>(DefaultRes.res(204, "success"), HttpStatus.OK);
     }
