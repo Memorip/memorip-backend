@@ -147,6 +147,7 @@ public class TravelController {
 
         int userId = dto.getUserId();
         User user = userService.getUserById(userId);
+        String nickname = user.getNickname();
 
         int planId = dto.getPlanId();
         Plan plan = planService.findByUserIdAndId(userId,planId);
@@ -155,6 +156,7 @@ public class TravelController {
         Travel entity = travelMapper.travelDTOtoTravel(dto);
         entity.setUser(user);
         entity.setPlan(plan);
+        entity.setNickname(nickname);
 
         //2. 엔티티 -> DB 저장
         Travel savedTravel = travelService.save(entity);

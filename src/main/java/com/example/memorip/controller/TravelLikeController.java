@@ -56,6 +56,21 @@ public class TravelLikeController {
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
 
+    // 여행기별 유저의 좋아요 여부 조회
+    @Operation(summary = "여행기별 유저의 좋아요 여부 조회", description = "여행기별 유저의 좋아요 여부를 조회하는 메서드입니다.")
+    @GetMapping("/user/{userId}/travel/{travelId}")
+    public ResponseEntity<DefaultRes<Boolean>> getLikesTravelByUser(@PathVariable int userId,@PathVariable int travelId){
+        TravelLike like = travelLikeService.findLikeById(userId,travelId);
+        int isLiked = 0;
+        if(like!=null)  isLiked= like.getIsLiked();
+
+        if(isLiked ==1) {
+            return new ResponseEntity<>(DefaultRes.res(200, "success",true), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(DefaultRes.res(200, "success",false), HttpStatus.OK);
+
+    }
+
     // 여행일정별 좋아요 조회
     @Operation(summary = "여행기별 좋아요 조회", description = "여행기별로 좋아요를 조회하는 메서드입니다.")
     @GetMapping("/{travelId}")
