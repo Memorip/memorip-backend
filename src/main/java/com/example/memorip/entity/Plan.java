@@ -19,6 +19,9 @@ public class Plan {
     private User user;
 
     @Column(nullable = false)
+    private String nickname;
+
+    @Column(nullable = false)
     private String city;
 
     @Column(name = "start_date",nullable = false)

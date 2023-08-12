@@ -25,6 +25,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),
     PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 동행자 정보를 찾을 수 없습니다"),
     PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행계획 정보를 찾을 수 없습니다"),
+    PLAN_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행계획 좋아요 정보를 찾을 수 없습니다"),
+    TRAVEL_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행기 좋아요 정보를 찾을 수 없습니다"),
     TIMELINE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 타임라인 정보를 찾을 수 없습니다"),
     TRAVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행기 정보를 찾을 수 없습니다"),
     USER_TRAVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 여행기를 작성할 수 있는 사용자가 아닙니다."),
