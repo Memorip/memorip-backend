@@ -1,6 +1,7 @@
 package com.example.memorip.controller;
 
-import com.example.memorip.dto.PlanDTO;
+import com.example.memorip.dto.ReqPlanDTO;
+import com.example.memorip.dto.ResPlanDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.User;
 import com.example.memorip.exception.CustomException;
@@ -40,11 +41,14 @@ public class PlanController {
 
     @Operation(summary = "여행일정 전체 조회", description = "여행일정을 전체 조회하는 메서드입니다.")
     @GetMapping("")
-    public ResponseEntity<DefaultRes<List<PlanDTO>>> getPlans(){
+    public ResponseEntity<DefaultRes<List<ResPlanDTO>>> getPlans(){
         List<Plan> lists = planService.findAll();
-        ArrayList<PlanDTO> dtoList = new ArrayList<>();
+        ArrayList<ResPlanDTO> dtoList = new ArrayList<>();
         for(Plan plan : lists){
-            dtoList.add(planMapper.planToPlanDTO(plan));
+            ResPlanDTO resDto = planMapper.planToPlanDTO(plan);
+            String nickname = plan.getUser().getNickname();
+            resDto.setNickname(nickname);
+            dtoList.add(resDto);
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
@@ -52,12 +56,15 @@ public class PlanController {
     // 조회수 순 정렬
     @Operation(summary = "여행일정 조회순 정렬", description = "여행일정을 조회순으로 정렬하여 조회하는 메서드입니다.")
     @GetMapping("/view/sort")
-    public ResponseEntity<DefaultRes<List<PlanDTO>>> sortPlanByViews(){
+    public ResponseEntity<DefaultRes<List<ResPlanDTO>>> sortPlanByViews(){
         List<Plan> lists = planService.sortByViews();
-        ArrayList<PlanDTO> dtoList = new ArrayList<>();
+        ArrayList<ResPlanDTO> dtoList = new ArrayList<>();
         if(lists.size()>0){
             for(Plan plan : lists){
-                dtoList.add(planMapper.planToPlanDTO(plan));
+                ResPlanDTO resDto = planMapper.planToPlanDTO(plan);
+                String nickname = plan.getUser().getNickname();
+                resDto.setNickname(nickname);
+                dtoList.add(resDto);
             }
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
@@ -66,31 +73,36 @@ public class PlanController {
     // 좋아요 순 정렬
     @Operation(summary = "여행일정 좋아요순 정렬", description = "여행일정을 좋아요순으로 정렬하여 조회하는 메서드입니다.")
     @GetMapping("/like/sort")
-    public ResponseEntity<DefaultRes<List<PlanDTO>>> sortPlanByLikes(){
+    public ResponseEntity<DefaultRes<List<ResPlanDTO>>> sortPlanByLikes(){
         List<Plan> lists = planService.sortByLikes();
-        ArrayList<PlanDTO> dtoList = new ArrayList<>();
+        ArrayList<ResPlanDTO> dtoList = new ArrayList<>();
         if (lists.size() == 0) {
             String errorMessage = "조회되는 여행 계획이 없어요.";
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
         for(Plan plan : lists){
-            dtoList.add(planMapper.planToPlanDTO(plan));
+            ResPlanDTO resDto = planMapper.planToPlanDTO(plan);
+            String nickname = plan.getUser().getNickname();
+            resDto.setNickname(nickname);
+            dtoList.add(resDto);
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 상세조회", description = "여행일정 상세를 조회하는 메서드입니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<DefaultRes<PlanDTO>> getPlanById(@PathVariable int id){
+    public ResponseEntity<DefaultRes<ResPlanDTO>> getPlanById(@PathVariable int id){
         Plan plan = planService.findById(id);
+        String nickname = plan.getUser().getNickname();
 
         if(!plan.getIsPublic()){
             throw new CustomException(ErrorCode.ACCESS_DENIED_PLAN);
         }
 
-        PlanDTO dto = planMapper.planToPlanDTO(plan);
+        ResPlanDTO dto = planMapper.planToPlanDTO(plan);
 
         dto.setViews(dto.getViews()+1);
+        dto.setNickname(nickname);
         Plan entity = planMapper.planDTOtoPlan(dto);
         int userId = dto.getUserId();
         User user = userService.getUserById(userId);
@@ -102,20 +114,23 @@ public class PlanController {
 
     @Operation(summary = "유저별 여행일정 조회", description = "유저별로 여행일정을 조회하는 메서드입니다.")
     @GetMapping("/user/{userId}")
-    public ResponseEntity<DefaultRes<List<PlanDTO>>> getPlanByUserId(@PathVariable int userId){
+    public ResponseEntity<DefaultRes<List<ResPlanDTO>>> getPlanByUserId(@PathVariable int userId){
         List<Plan> lists = planService.findByUserId(userId);
         User user = userService.getUserById(userId);
 
-        ArrayList<PlanDTO> dtoList = new ArrayList<>();
+        ArrayList<ResPlanDTO> dtoList = new ArrayList<>();
         for(Plan plan : lists){
-            dtoList.add(planMapper.planToPlanDTO(plan));
+            ResPlanDTO resDto = planMapper.planToPlanDTO(plan);
+            String nickname = plan.getUser().getNickname();
+            resDto.setNickname(nickname);
+            dtoList.add(resDto);
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 추가", description = "여행일정을 추가하는 메서드입니다.")
     @PostMapping("/add")
-    public ResponseEntity<DefaultRes<PlanDTO>> savePlan(@Valid @RequestBody PlanDTO dto) {
+    public ResponseEntity<DefaultRes<ResPlanDTO>> savePlan(@Valid @RequestBody ReqPlanDTO dto) {
         dto.setViews(0);
 
         int userId = dto.getUserId();
@@ -125,22 +140,38 @@ public class PlanController {
         List<Integer> participants = dto.getParticipants();
         userService.getParticipantById(participants);
 
+        ResPlanDTO resDto = new ResPlanDTO();
+        resDto.setId(dto.getId());
+        resDto.setUserId(dto.getUserId());
+        resDto.setNickname(nickname);
+        resDto.setCity(dto.getCity());
+        resDto.setStartDate(dto.getStartDate());
+        resDto.setEndDate(dto.getEndDate());
+        resDto.setTripType(dto.getTripType());
+        resDto.setParticipants(dto.getParticipants());
+        resDto.setCreatedAt(dto.getCreatedAt());
+        resDto.setIsPublic(dto.getIsPublic());
+        resDto.setViews(dto.getViews());
+        resDto.setLikes(dto.getLikes());
+
         //1. DTO -> 엔티티 변환
-        Plan entity = planMapper.planDTOtoPlan(dto);
-        entity.setNickname(nickname);
+        Plan entity = planMapper.planDTOtoPlan(resDto);
         entity.setUser(user);
         entity.setCreatedAt(LocalDateTime.now());
         //2. 엔티티 -> DB 저장
         Plan savedPlan = planService.save(entity);
         //3. 엔티티 -> DTO 변환
-        PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
+        ResPlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
+        savedDto.setNickname(nickname);
+
         return new ResponseEntity<>(DefaultRes.res(201, "success", savedDto), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 수정", description = "여행일정을 수정하는 메서드입니다.")
     @PatchMapping("/add/{id}")
-    public ResponseEntity<DefaultRes<PlanDTO>> updatePlan(@Valid @PathVariable int id, @RequestBody PlanDTO dto){
+    public ResponseEntity<DefaultRes<ResPlanDTO>> updatePlan(@Valid @PathVariable int id, @RequestBody ReqPlanDTO dto){
         Plan plan = planService.findById(id);
+        String nickname = plan.getUser().getNickname();
         if(dto.getCity()!=null) {
             String cities = planMapper.cityListToString(dto.getCity());
             plan.setCity(cities);
@@ -156,7 +187,8 @@ public class PlanController {
         if(dto.getIsPublic()!=null) plan.setIsPublic(dto.getIsPublic());
 
         Plan savedPlan = planService.save(plan);
-        PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
+        ResPlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
+        savedDto.setNickname(nickname);
         return new ResponseEntity<>(DefaultRes.res(200, "success",savedDto), HttpStatus.OK);
     }
 

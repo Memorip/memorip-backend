@@ -1,17 +1,15 @@
 package com.example.memorip.dto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+
 @Getter
 @Setter
-public class PlanDTO {
+public class ResPlanDTO {
     private int id;
     private int userId;
     private String nickname;
