@@ -1,6 +1,6 @@
 package com.example.memorip.repository;
 
-import com.example.memorip.dto.ResPlanDTO;
+import com.example.memorip.dto.plan.PlanDTO;
 import com.example.memorip.entity.Plan;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,11 +17,11 @@ public interface PlanMapper {
     @Mapping(source = "city", target = "city",qualifiedByName = "cityToList")
     @Mapping(source = "participants", target = "participants",qualifiedByName = "participantsToIntegers")
     @Mapping(source = "user.id", target = "userId")
-    ResPlanDTO planToPlanDTO(Plan plan);
+    PlanDTO planToPlanDTO(Plan plan);
 
     @Mapping(source = "city", target = "city",qualifiedByName = "cityListToString")
     @Mapping(source = "participants", target = "participants",qualifiedByName = "participantsIntegerToString")
-    Plan planDTOtoPlan(ResPlanDTO dto);
+    Plan planDTOtoPlan(PlanDTO dto);
 
     @Named("cityToList")
     default List<String> citiesToLists(String city) {

@@ -1,7 +1,8 @@
 package com.example.memorip.controller;
 
-import com.example.memorip.dto.ReqPlanDTO;
-import com.example.memorip.dto.ResPlanDTO;
+import com.example.memorip.dto.plan.PlanDTO;
+import com.example.memorip.dto.plan.PlanRequest;
+import com.example.memorip.dto.plan.PlanResponse;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.User;
 import com.example.memorip.exception.CustomException;
@@ -23,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.memorip.dto.plan.PlanResponse.convertToResponseDto;
+
 @Tag(name = "plan", description = "여행일정 관련 api 입니다.")
 @Slf4j
 @RestController
@@ -41,13 +44,13 @@ public class PlanController {
 
     @Operation(summary = "여행일정 전체 조회", description = "여행일정을 전체 조회하는 메서드입니다.")
     @GetMapping("")
-    public ResponseEntity<DefaultRes<List<ResPlanDTO>>> getPlans(){
+    public ResponseEntity<DefaultRes<List<PlanResponse>>> getPlans(){
         List<Plan> lists = planService.findAll();
-        ArrayList<ResPlanDTO> dtoList = new ArrayList<>();
+        ArrayList<PlanResponse> dtoList = new ArrayList<>();
         for(Plan plan : lists){
-            ResPlanDTO resDto = planMapper.planToPlanDTO(plan);
+            PlanDTO dto = planMapper.planToPlanDTO(plan);
             String nickname = plan.getUser().getNickname();
-            resDto.setNickname(nickname);
+            PlanResponse resDto = convertToResponseDto(dto,nickname);
             dtoList.add(resDto);
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
@@ -56,14 +59,14 @@ public class PlanController {
     // 조회수 순 정렬
     @Operation(summary = "여행일정 조회순 정렬", description = "여행일정을 조회순으로 정렬하여 조회하는 메서드입니다.")
     @GetMapping("/view/sort")
-    public ResponseEntity<DefaultRes<List<ResPlanDTO>>> sortPlanByViews(){
+    public ResponseEntity<DefaultRes<List<PlanResponse>>> sortPlanByViews(){
         List<Plan> lists = planService.sortByViews();
-        ArrayList<ResPlanDTO> dtoList = new ArrayList<>();
+        ArrayList<PlanResponse> dtoList = new ArrayList<>();
         if(lists.size()>0){
             for(Plan plan : lists){
-                ResPlanDTO resDto = planMapper.planToPlanDTO(plan);
+                PlanDTO dto = planMapper.planToPlanDTO(plan);
                 String nickname = plan.getUser().getNickname();
-                resDto.setNickname(nickname);
+                PlanResponse resDto = convertToResponseDto(dto,nickname);
                 dtoList.add(resDto);
             }
         }
@@ -73,17 +76,17 @@ public class PlanController {
     // 좋아요 순 정렬
     @Operation(summary = "여행일정 좋아요순 정렬", description = "여행일정을 좋아요순으로 정렬하여 조회하는 메서드입니다.")
     @GetMapping("/like/sort")
-    public ResponseEntity<DefaultRes<List<ResPlanDTO>>> sortPlanByLikes(){
+    public ResponseEntity<DefaultRes<List<PlanResponse>>> sortPlanByLikes(){
         List<Plan> lists = planService.sortByLikes();
-        ArrayList<ResPlanDTO> dtoList = new ArrayList<>();
+        ArrayList<PlanResponse> dtoList = new ArrayList<>();
         if (lists.size() == 0) {
             String errorMessage = "조회되는 여행 계획이 없어요.";
             return new ResponseEntity<>(DefaultRes.res(400, errorMessage, null), HttpStatus.BAD_REQUEST);
         }
         for(Plan plan : lists){
-            ResPlanDTO resDto = planMapper.planToPlanDTO(plan);
+            PlanDTO dto = planMapper.planToPlanDTO(plan);
             String nickname = plan.getUser().getNickname();
-            resDto.setNickname(nickname);
+            PlanResponse resDto = convertToResponseDto(dto,nickname);
             dtoList.add(resDto);
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
@@ -91,7 +94,7 @@ public class PlanController {
 
     @Operation(summary = "여행일정 상세조회", description = "여행일정 상세를 조회하는 메서드입니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<DefaultRes<ResPlanDTO>> getPlanById(@PathVariable int id){
+    public ResponseEntity<DefaultRes<PlanResponse>> getPlanById(@PathVariable int id){
         Plan plan = planService.findById(id);
         String nickname = plan.getUser().getNickname();
 
@@ -99,30 +102,29 @@ public class PlanController {
             throw new CustomException(ErrorCode.ACCESS_DENIED_PLAN);
         }
 
-        ResPlanDTO dto = planMapper.planToPlanDTO(plan);
-
+        PlanDTO dto = planMapper.planToPlanDTO(plan);
         dto.setViews(dto.getViews()+1);
-        dto.setNickname(nickname);
         Plan entity = planMapper.planDTOtoPlan(dto);
         int userId = dto.getUserId();
         User user = userService.getUserById(userId);
         entity.setUser(user);
-
         Plan savedPlan = planService.save(entity);
-        return new ResponseEntity<>(DefaultRes.res(200, "success", dto), HttpStatus.OK);
+        PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
+        PlanResponse resDto = convertToResponseDto(savedDto,nickname);
+        return new ResponseEntity<>(DefaultRes.res(200, "success", resDto), HttpStatus.OK);
     }
 
     @Operation(summary = "유저별 여행일정 조회", description = "유저별로 여행일정을 조회하는 메서드입니다.")
     @GetMapping("/user/{userId}")
-    public ResponseEntity<DefaultRes<List<ResPlanDTO>>> getPlanByUserId(@PathVariable int userId){
+    public ResponseEntity<DefaultRes<List<PlanResponse>>> getPlanByUserId(@PathVariable int userId){
         List<Plan> lists = planService.findByUserId(userId);
         User user = userService.getUserById(userId);
 
-        ArrayList<ResPlanDTO> dtoList = new ArrayList<>();
+        ArrayList<PlanResponse> dtoList = new ArrayList<>();
         for(Plan plan : lists){
-            ResPlanDTO resDto = planMapper.planToPlanDTO(plan);
+            PlanDTO dto = planMapper.planToPlanDTO(plan);
             String nickname = plan.getUser().getNickname();
-            resDto.setNickname(nickname);
+            PlanResponse resDto = convertToResponseDto(dto,nickname);
             dtoList.add(resDto);
         }
         return new ResponseEntity<>(DefaultRes.res(200, "success", dtoList), HttpStatus.OK);
@@ -130,8 +132,8 @@ public class PlanController {
 
     @Operation(summary = "여행일정 추가", description = "여행일정을 추가하는 메서드입니다.")
     @PostMapping("/add")
-    public ResponseEntity<DefaultRes<ResPlanDTO>> savePlan(@Valid @RequestBody ReqPlanDTO dto) {
-        dto.setViews(0);
+    public ResponseEntity<DefaultRes<PlanResponse>> savePlan(@Valid @RequestBody PlanRequest reqDto) {
+        PlanDTO dto = reqDto.toDto(reqDto);
 
         int userId = dto.getUserId();
         User user = userService.getUserById(userId);
@@ -140,36 +142,22 @@ public class PlanController {
         List<Integer> participants = dto.getParticipants();
         userService.getParticipantById(participants);
 
-        ResPlanDTO resDto = new ResPlanDTO();
-        resDto.setId(dto.getId());
-        resDto.setUserId(dto.getUserId());
-        resDto.setNickname(nickname);
-        resDto.setCity(dto.getCity());
-        resDto.setStartDate(dto.getStartDate());
-        resDto.setEndDate(dto.getEndDate());
-        resDto.setTripType(dto.getTripType());
-        resDto.setParticipants(dto.getParticipants());
-        resDto.setCreatedAt(dto.getCreatedAt());
-        resDto.setIsPublic(dto.getIsPublic());
-        resDto.setViews(dto.getViews());
-        resDto.setLikes(dto.getLikes());
-
         //1. DTO -> 엔티티 변환
-        Plan entity = planMapper.planDTOtoPlan(resDto);
+        Plan entity = planMapper.planDTOtoPlan(dto);
         entity.setUser(user);
         entity.setCreatedAt(LocalDateTime.now());
         //2. 엔티티 -> DB 저장
         Plan savedPlan = planService.save(entity);
         //3. 엔티티 -> DTO 변환
-        ResPlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
-        savedDto.setNickname(nickname);
+        PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
 
-        return new ResponseEntity<>(DefaultRes.res(201, "success", savedDto), HttpStatus.OK);
+        PlanResponse resDto = convertToResponseDto(savedDto,nickname);
+        return new ResponseEntity<>(DefaultRes.res(201, "success", resDto), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 수정", description = "여행일정을 수정하는 메서드입니다.")
     @PatchMapping("/add/{id}")
-    public ResponseEntity<DefaultRes<ResPlanDTO>> updatePlan(@Valid @PathVariable int id, @RequestBody ReqPlanDTO dto){
+    public ResponseEntity<DefaultRes<PlanResponse>> updatePlan(@Valid @PathVariable int id, @RequestBody PlanRequest dto){
         Plan plan = planService.findById(id);
         String nickname = plan.getUser().getNickname();
         if(dto.getCity()!=null) {
@@ -183,13 +171,12 @@ public class PlanController {
             String participants = planMapper.participantsIntegerToString(dto.getParticipants());
             plan.setParticipants(participants);
         }
-        if(dto.getCreatedAt()!=null) plan.setCreatedAt(dto.getCreatedAt());
         if(dto.getIsPublic()!=null) plan.setIsPublic(dto.getIsPublic());
 
         Plan savedPlan = planService.save(plan);
-        ResPlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
-        savedDto.setNickname(nickname);
-        return new ResponseEntity<>(DefaultRes.res(200, "success",savedDto), HttpStatus.OK);
+        PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
+        PlanResponse resDto = convertToResponseDto(savedDto,nickname);
+        return new ResponseEntity<>(DefaultRes.res(200, "success",resDto), HttpStatus.OK);
     }
 
     @Operation(summary = "여행일정 삭제", description = "여행일정을 삭제하는 메서드입니다.")

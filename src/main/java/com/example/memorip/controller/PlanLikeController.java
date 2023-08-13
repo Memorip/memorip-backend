@@ -2,7 +2,7 @@ package com.example.memorip.controller;
 
 import com.example.memorip.dto.PlanLikeDTO;
 import com.example.memorip.dto.PlanLikeRequest;
-import com.example.memorip.dto.ResPlanDTO;
+import com.example.memorip.dto.plan.PlanDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.PlanLike;
 import com.example.memorip.entity.User;
@@ -119,7 +119,7 @@ public class PlanLikeController {
             PlanLike savedLike = likeService.save(entity);
 
             // 좋아요 추가
-            ResPlanDTO plandto = planMapper.planToPlanDTO(plan);
+            PlanDTO plandto = planMapper.planToPlanDTO(plan);
             plandto.setLikes(plandto.getLikes()+1);
             Plan planentity = planMapper.planDTOtoPlan(plandto);
             planentity.setUser(user);
@@ -136,7 +136,7 @@ public class PlanLikeController {
             newdto.setIsLiked(1);
 
             // 좋아요 추가
-            ResPlanDTO plandto = planMapper.planToPlanDTO(plan);
+            PlanDTO plandto = planMapper.planToPlanDTO(plan);
             plandto.setLikes(plandto.getLikes()+1);
             Plan planentity = planMapper.planDTOtoPlan(plandto);
 
@@ -188,7 +188,7 @@ public class PlanLikeController {
             PlanLike savedLike = likeService.save(entity);
 
             // 좋아요 취소
-            ResPlanDTO plandto = planMapper.planToPlanDTO(plan);
+            PlanDTO plandto = planMapper.planToPlanDTO(plan);
             plandto.setLikes(plandto.getLikes()-1);
 
             Plan planentity = planMapper.planDTOtoPlan(plandto);
