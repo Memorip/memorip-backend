@@ -22,21 +22,4 @@ public class PlanResponse {
     private Boolean isPublic;
     private int views;
     private int likes;
-
-    public static PlanResponse convertToResponseDto(PlanDTO dto, String nickname) {
-        PlanResponse resDto = new PlanResponse();
-        resDto.setId(dto.getId());
-        resDto.setUserId(dto.getUserId());
-        resDto.setNickname(nickname);
-        resDto.setCity(dto.getCity());
-        resDto.setStartDate(dto.getStartDate());
-        resDto.setEndDate(dto.getEndDate());
-        resDto.setTripType(dto.getTripType());
-        resDto.setParticipants(dto.getParticipants());
-        resDto.setCreatedAt(dto.getCreatedAt());
-        resDto.setIsPublic(dto.getIsPublic());
-        resDto.setViews(dto.getViews());
-        resDto.setLikes(dto.getLikes());
-        return resDto;
-    }
 }

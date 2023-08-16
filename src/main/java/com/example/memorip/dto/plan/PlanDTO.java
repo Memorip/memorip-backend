@@ -10,6 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 public class PlanDTO {
     private int id;
     private int userId;
@@ -22,21 +23,4 @@ public class PlanDTO {
     private Boolean isPublic;
     private int views;
     private int likes;
-
-    @Builder
-    public PlanDTO(int id,int userId,List<String> city, Date startDate, Date endDate,
-                   String tripType, List<Integer> participants, LocalDateTime createdAt,
-                   Boolean isPublic, int views,int likes) {
-        this.id = id;
-        this.userId = userId;
-        this.city = city;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.tripType = tripType;
-        this.participants = participants;
-        this.createdAt = createdAt;
-        this.isPublic = isPublic;
-        this.views = views;
-        this.likes = likes;
-    }
 }
