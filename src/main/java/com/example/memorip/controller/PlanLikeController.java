@@ -1,8 +1,8 @@
 package com.example.memorip.controller;
 
 import com.example.memorip.dto.PlanLikeDTO;
-import com.example.memorip.dto.PlanDTO;
 import com.example.memorip.dto.PlanLikeRequest;
+import com.example.memorip.dto.plan.PlanDTO;
 import com.example.memorip.entity.Plan;
 import com.example.memorip.entity.PlanLike;
 import com.example.memorip.entity.User;
