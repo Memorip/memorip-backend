@@ -22,4 +22,5 @@ public class PlanResponse {
     private Boolean isPublic;
     private int views;
     private int likes;
+    private String thumbnail;
 }

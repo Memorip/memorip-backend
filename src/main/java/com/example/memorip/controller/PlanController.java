@@ -10,6 +10,7 @@ import com.example.memorip.exception.DefaultRes;
 import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.PlanMapper;
 import com.example.memorip.service.PlanService;
+import com.example.memorip.service.S3UploadService;
 import com.example.memorip.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,10 +37,12 @@ public class PlanController {
 
     private final UserService userService;
     private final PlanMapper planMapper;
-    PlanController(PlanService planService, UserService userService, PlanMapper planMapper){
+    private final S3UploadService s3UploadService;
+    PlanController(PlanService planService, UserService userService, PlanMapper planMapper,S3UploadService s3UploadService){
         this.planService=planService;
         this.userService = userService;
         this.planMapper=planMapper;
+        this.s3UploadService=s3UploadService;
     }
 
     @Operation(summary = "여행일정 전체 조회", description = "여행일정을 전체 조회하는 메서드입니다.")
@@ -111,7 +116,8 @@ public class PlanController {
 
     @Operation(summary = "여행일정 추가", description = "여행일정을 추가하는 메서드입니다.")
     @PostMapping("/add")
-    public ResponseEntity<DefaultRes<PlanResponse>> savePlan(@Valid @RequestBody PlanRequest reqDto) {
+    public ResponseEntity<DefaultRes<PlanResponse>> savePlan(@RequestPart(value = "json") PlanRequest reqDto,
+                                                             @RequestPart(value = "thumbnail") MultipartFile thumbnail) {
         PlanDTO dto = planMapper.planRequestToPlanDTO(reqDto,0,0,0);
 
         int userId = dto.getUserId();
@@ -119,6 +125,19 @@ public class PlanController {
 
         List<Integer> participants = dto.getParticipants();
         userService.getParticipantById(participants);
+
+        // 이미지 업로드 및 URL 저장
+        String thumbnailUrl = null;
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            try {
+                thumbnailUrl = s3UploadService.saveFile(thumbnail); // S3에 업로드하고 URL 반환
+            } catch (IOException e) {
+                // 이미지 업로드 실패 처리
+                e.printStackTrace();
+                // 에러 응답을 보낼 수 있습니다.
+            }
+        }
+        dto.setThumbnail(thumbnailUrl);
 
         //1. DTO -> 엔티티 변환
         Plan entity = planMapper.planDTOtoPlan(dto);
@@ -130,6 +149,7 @@ public class PlanController {
         PlanDTO savedDto = planMapper.planToPlanDTO(savedPlan);
 
         PlanResponse resDto = planMapper.planDTOtoPlanResponse(savedDto,user.getNickname());
+
         return ResponseEntity.ok(DefaultRes.res(201, "success", resDto));
     }
 

@@ -23,4 +23,5 @@ public class PlanDTO {
     private Boolean isPublic;
     private int views;
     private int likes;
+    private String thumbnail;
 }

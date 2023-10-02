@@ -44,4 +44,8 @@ public class Plan {
 
     @Column(nullable = false)
     private int likes;
+
+    @Column
+    private String thumbnail;
+
 }
