@@ -50,9 +50,11 @@ public class PlanLikeController {
     public ResponseEntity<DefaultRes<List<PlanLikeDTO>>> getLikesByUser(@PathVariable int userId){
         List<PlanLike> lists = likeService.findByUserId(userId);
         ArrayList<PlanLikeDTO> dtoList = new ArrayList<>();
+
         if(lists.size()>0){
             for(PlanLike like : lists){
-                dtoList.add(likeMapper.likeToLikeDTO(like));
+                PlanLikeDTO likeDto = likeMapper.likeToLikeDTO(like);
+                dtoList.add(likeDto);
             }
         }
 

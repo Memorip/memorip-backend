@@ -10,6 +10,7 @@ import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -31,8 +32,8 @@ public interface PlanMapper {
 
     @Named("cityToList")
     default List<String> citiesToLists(String city) {
-        List<String> cities = new ArrayList<>();
-        cities.add(city);
+        String[] lists = city.split(",");
+        List<String> cities = new ArrayList<>(Arrays.asList(lists));
         return cities;
     }
 
