@@ -48,5 +48,4 @@ public class InvitationController {
         return new ResponseEntity<>(DefaultRes.res(201, "초대링크 생성 성공", invitationDTO), HttpStatus.OK);
     }
 
-
 }
