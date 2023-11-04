@@ -62,4 +62,32 @@ public class PlanService {
         return planRepository.findByUserIdAndId(userId,planId).orElseThrow(()->new CustomException(ErrorCode.USER_TRAVEL_NOT_FOUND));
 
     }
+
+    @Transactional
+    public Plan addParticipant(Plan plan, int userId){
+        String participants = plan.getParticipants();
+        String[] participantIds = participants.split(",");
+        for (String id : participantIds) {
+            if (id.equals(String.valueOf(userId))) {
+                throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 참여중입니다.");
+            }
+        }
+        participants += "," + userId;
+        plan.setParticipants(participants);
+        return planRepository.save(plan);
+    }
+
+    @Transactional
+    public Plan deleteParticipant(Plan plan, int userId){
+        String participants = plan.getParticipants();
+        String[] participantList = participants.split(",");
+        StringBuilder newParticipants = new StringBuilder();
+        for(String participant : participantList){
+            if(!participant.equals(String.valueOf(userId))){
+                newParticipants.append(participant).append(",");
+            }
+        }
+        plan.setParticipants(newParticipants.toString());
+        return planRepository.save(plan);
+    }
 }

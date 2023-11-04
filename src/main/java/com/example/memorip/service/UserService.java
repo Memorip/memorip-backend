@@ -8,6 +8,7 @@ import com.example.memorip.entity.User;
 import com.example.memorip.exception.CustomException;
 import com.example.memorip.exception.ErrorCode;
 import com.example.memorip.repository.UserRepository;
+import com.example.memorip.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,12 @@ import java.util.*;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisUtil redisUtil;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RedisUtil redisUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.redisUtil = redisUtil;
     }
 
     @Transactional(readOnly = true)
@@ -57,7 +60,8 @@ public class UserService {
 
     @Transactional
     public User signup(SignUpDTO signUpDTO){
-        if(isEmailTaken(signUpDTO.getEmail())){
+        String email = signUpDTO.getEmail();
+        if(isEmailTaken(email)){
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE, "이미 사용중인 이메일입니다.");
         }
 
@@ -78,6 +82,9 @@ public class UserService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
+        if(redisUtil.existData(email)){
+            redisUtil.deleteData(email);
+        }
         return userRepository.save(user);
     }
 

@@ -1,6 +1,7 @@
 package com.example.memorip.controller;
 
 import com.example.memorip.dto.plan.PlanDTO;
+import com.example.memorip.dto.plan.PlanParticipantRequest;
 import com.example.memorip.dto.plan.PlanRequest;
 import com.example.memorip.dto.plan.PlanResponse;
 import com.example.memorip.entity.Plan;
@@ -161,7 +162,33 @@ public class PlanController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<DefaultRes<Void>> deletePlanById(@PathVariable int id) {
         Plan plan = planService.findById(id);
-        planService.deleteById(id);
+        planService.deleteById(plan.getId());
         return ResponseEntity.ok(DefaultRes.res(204, "success"));
+    }
+
+    @Operation(summary = "여행일정에 참여자 추가", description = "여행일정에 참여자를 추가하는 메서드입니다.")
+    @PostMapping("/add/participant")
+    public ResponseEntity<DefaultRes<PlanResponse>> addParticipant(@RequestBody PlanParticipantRequest reqDto) {
+        Plan plan = planService.findById(reqDto.getPlanId());
+        User user = userService.getUserById(reqDto.getUserId());
+
+        Plan updatePlan = planService.addParticipant(plan, user.getId());
+        PlanDTO updateDto = planMapper.planToPlanDTO(updatePlan);
+        PlanResponse resDto = planMapper.planDTOtoPlanResponse(updateDto, plan.getUser().getNickname());
+
+        return ResponseEntity.ok(DefaultRes.res(201, "success", resDto));
+    }
+
+    @Operation(summary = "여행일정에 참여자 삭제", description = "여행일정에 참여자를 삭제하는 메서드입니다.")
+    @PostMapping("/delete/participant")
+    public ResponseEntity<DefaultRes<PlanResponse>> deleteParticipant(@RequestBody PlanParticipantRequest reqDto) {
+        Plan plan = planService.findById(reqDto.getPlanId());
+        User user = userService.getUserById(reqDto.getUserId());
+
+        Plan updatePlan = planService.deleteParticipant(plan, user.getId());
+        PlanDTO updateDto = planMapper.planToPlanDTO(updatePlan);
+        PlanResponse resDto = planMapper.planDTOtoPlanResponse(updateDto, plan.getUser().getNickname());
+
+        return ResponseEntity.ok(DefaultRes.res(204, "success", resDto));
     }
 }
